@@ -1,12 +1,12 @@
 const User = require('../src/models/user');
-const staticNames = require('../src/static/names');
+const sn = require('../src/static/names');
 const errorMessages = require('./../src/static/errorMessages');
 
 module.exports.create = () => {
     const adminUser = new User({
-        email: staticNames.adminEmail,
-        password: staticNames.adminPassword,
-        role: staticNames.adminRole,
+        email: sn.adminEmail,
+        password: sn.adminPassword,
+        role: sn.adminRole,
         verified: false
     });
     User.getUserByEmail(adminUser.email).then((user) => { // check to see if admin user exists
