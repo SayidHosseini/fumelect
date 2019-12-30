@@ -36,8 +36,8 @@ module.exports.tokenResponse = async (token, res, next) => {
 
 const validateToken = (token) => { // checks if the jwt has expired
     const verifyOptions = {
-        issuer: jwt.fumServerIssuer,
-        audience: jwt.fumClientIssuer
+        issuer: jwt.authentiqIssuer,
+        audience: jwt.authentiqIssuer
     };
 
     const legit = jwt.verify(token, verifyOptions);

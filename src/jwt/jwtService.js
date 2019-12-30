@@ -5,17 +5,17 @@ const jwt = require('jsonwebtoken');
 const privateKEY = fs.readFileSync('./src/jwt/private.key', 'utf8');
 const publicKEY = fs.readFileSync('./src/jwt/public.key', 'utf8');
 
-const fumServerIssuer = "FUM-Elect Server";
-const fumClientIssuer = "FUM-Elect Client";
+const authentiqServerIssuer = "Authentiq Server";
+const authentiqClientIssuer = "Authentiq Client";
 const validityPeriod = "1d";
 const signAlgorithm = "RS256";
 
 module.exports = {
     sign: (payload, $Options) => {
         const signOptions = {
-            issuer: fumServerIssuer,
+            issuer: authentiqServerIssuer,
             subject: $Options.subject,
-            audience: fumClientIssuer,
+            audience: authentiqClientIssuer,
             expiresIn: validityPeriod,
             algorithm: signAlgorithm
         };
@@ -24,9 +24,9 @@ module.exports = {
 
     verify: (token, $Option) => {
         const verifyOptions = {
-            issuer: fumServerIssuer,
+            issuer: authentiqServerIssuer,
             subject: $Option.subject,
-            audience: fumClientIssuer,
+            audience: authentiqClientIssuer,
             expiresIn: validityPeriod,
             algorithm: [signAlgorithm]
         };
