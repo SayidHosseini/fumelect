@@ -12,6 +12,7 @@ const dbURI = (process.env.DB === undefined)? config.dbURL: process.env.DB;
 mongoose.connect(dbURI, {
     useCreateIndex: true,
     useNewUrlParser: true,
+    useUnifiedTopology: true
 }).catch(err => {
     console.error(errorMessages.databaseConnectionError, err.stack);
     process.exit(1);
@@ -25,9 +26,6 @@ const validateRouter = require('./routes/validate');
 
 const rm = require('./static/responseMessages');
 const sn = require('./static/names');
-
-const LoggedIn = require('./models/loggedIn');
-const jwt = require('./jwt/jwtService');
 
 const app = express();
 
