@@ -24,6 +24,8 @@ const UserSchema = mongoose.Schema({
     }
 });
 
+// TODO: Modify structure to use objects instead of method parameters
+
 const User = module.exports = mongoose.model('User', UserSchema);
 
 module.exports.createUser = (newUser, callback) => {

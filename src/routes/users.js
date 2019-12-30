@@ -27,8 +27,8 @@ router.post('/register', (req, res, next) => {
     } = req.body;
 
     let newUser = new User({
-        email: email,
-        password: password,
+        email,
+        password,
         role: sn.userRole,
         verified: false
     });
@@ -41,7 +41,7 @@ router.post('/register', (req, res, next) => {
             return next(err);
         }
 
-        return res.status(rm.registerSuccessful.code).json(rm.registerSuccessful.msg);
+    return res.status(rm.registerSuccessful.code).json(rm.registerSuccessful.msg);
     });
 });
 
@@ -145,8 +145,8 @@ router.put('/changePassword', (req, res, next) => {
 });
 
 router.get('/list', (req, res, next) => {
-    const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
-    // console.log(req.query);
+    // TODO: Restrict to admin users only
+    
     User.getUsers((err, result) => {
         if (err) {
             return next(err);
@@ -166,8 +166,6 @@ router.get('/list', (req, res, next) => {
             };
 
             body.usersList.push(user);
-            // var newList = Object.assign(JSON.stringify(newList), user);
-            // console.log(body);
         });
 
         return res.status(rm.loggedIn.code).json(body);

@@ -9,6 +9,8 @@ const LoggedInSchema = mongoose.Schema({
     }
 });
 
+// TODO: Modify structure to use objects instead of method parameters
+
 const LoggedIn = module.exports = mongoose.model('LoggedIn', LoggedInSchema);
 
 module.exports.createLoggedIn = (newLoggedIn, callback) => {
