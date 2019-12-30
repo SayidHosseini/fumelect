@@ -41,7 +41,29 @@ router.post('/register', (req, res, next) => {
             return next(err);
         }
 
-    return res.status(rm.registerSuccessful.code).json(rm.registerSuccessful.msg);
+        // Log the user in automatically
+        let payload = {
+            email
+        };
+        let signOptions = {
+            subject: email
+        };
+        let token = jwt.sign(payload, signOptions);
+        let newLoggedIn = new LoggedIn({
+            token
+        });
+
+        LoggedIn.createLoggedIn(newLoggedIn, (err) => {
+            if (err) {
+                return next(err);
+            }
+
+            var body = {
+                message: rm.registerSuccessful.msg.message,
+                token
+            };
+            return res.status(rm.registerSuccessful.code).json(body);
+        });
     });
 });
 
