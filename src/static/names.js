@@ -1,6 +1,6 @@
 module.exports = {
     adminPassword: "admin1234",
-    adminEmail: "admin@fumelect.com",
+    adminEmail: "admin@authentiq.com",
     role: "role",
     adminRole: "admin",
     userRole: "user",
