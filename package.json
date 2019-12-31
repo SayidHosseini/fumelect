@@ -1,11 +1,32 @@
 {
-  "name": "auth",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www"
+  "name": "authentiq",
+  "description": "An authentic authentication service, developed with node.js on express.js framework powered by MongoDB",
+  "version": "1.0.1",
+  "author": {
+    "name": "S. Saeid Hosseini",
+    "email": "sayidhosseini@hotmail.com",
+    "url": "https://www.linkedin.com/in/sayidhosseini"
   },
+  "contributors": [
+    "Mohammad Moradi <mohammad.moradi9375@gmail.com>"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SayidHosseini/authentiq.git"
+  },
+  "homepage": "https://github.com/SayidHosseini/authentiq",
+  "bugs": {
+    "url": "https://github.com/SayidHosseini/authentiq/issues"
+  },
+  "keywords": [
+    "authentication",
+    "restful-api",
+    "nodejs",
+    "mongodb",
+    "microservice",
+    "docker"
+  ],
   "dependencies": {
     "@hapi/joi": "^15.1.1",
     "bcryptjs": "^2.4.3",
@@ -17,5 +38,12 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
   }
 }
