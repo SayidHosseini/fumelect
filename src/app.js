@@ -41,6 +41,7 @@ app.use('/auth/v1/', indexRouter);
 // middleware responsible for checking if token exists (in needed routes)
 // routers that do not require token should be declared before this middleware
 app.use(async (req, res, next) => {
+    // TODO: Modify the for behavior to add middleware to each API
     // check if the request is included in checking
     for (let index = 0; index < config.AuthenticationList.length; index++) {
         const {

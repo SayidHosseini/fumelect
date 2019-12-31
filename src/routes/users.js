@@ -81,6 +81,8 @@ router.post('/login', (req, res, next) => {
         password
     } = req.body;
 
+
+    // TODO: Make this part reusable and use it in Register    
     User.getUserByEmail(email).then((user) => {
         if (!user) {
             return res.status(rm.invalidUserPass.code).json(rm.invalidUserPass.msg);
@@ -196,6 +198,9 @@ router.get('/list', (req, res, next) => {
 });
 
 router.get('/role', (req, res, next) => {
+    // TODO: Make this part reusable and use it in token validation
+    // TODO: Make Get Role more flexible by accepting emails in request and checking their role
+
     const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
     User.getUserByEmail(jwt.decode(token).payload.email).then((user) => {
         if (!user) {

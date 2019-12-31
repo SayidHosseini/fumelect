@@ -4,6 +4,7 @@ const rm = require('../static/responseMessages');
 const jwt = require('../jwt/jwtService');
 
 module.exports.tokenResponse = async (token, res, next) => {
+    // TODO: extract email and role, add it to user request for further processing 
     try {
         let result = await LoggedIn.getRecordByToken(token);
         if (!result) {
