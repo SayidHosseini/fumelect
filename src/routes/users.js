@@ -121,6 +121,7 @@ router.post('/login', (req, res, next) => {
         return next(err);
     });
 });
+
 router.put('/changePassword', (req, res, next) => {
     const {
         error
