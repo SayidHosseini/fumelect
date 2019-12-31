@@ -62,7 +62,7 @@ module.exports = {
     loggedIn: {
         code: 200,
         msg: {
-            message: "Yes! You are logged in!"
+            message: "You are logged in!"
         }
     },
     invalidPassword: {
