@@ -2,24 +2,24 @@ module.exports = {
     dbURL: "mongodb://db:27017/authentiq",
     AuthenticationList: [{
         method: "GET",
-        url: "/auth/v1/validate/token"
+        url: "/authentiq/v1/validate/token"
     }, {
         method: "PUT",
-        url: "/auth/v1/user/changePassword"
+        url: "/authentiq/v1/user/changePassword"
     }, {
         method: "GET",
-        url: "/auth/v1/user/list"
+        url: "/authentiq/v1/user/list"
     }, {
         method: "GET",
-        url: "/auth/v1/user/role"
+        url: "/authentiq/v1/user/role"
     }, {
         method: "PUT",
-        url: "/auth/v1/user/role"
+        url: "/authentiq/v1/user/role"
     }, {
         method: "DELETE",
-        url: "/auth/v1/user/logout"
+        url: "/authentiq/v1/user/logout"
     }, {
         method: "DELETE",
-        url: "/auth/v1/user/delete"
+        url: "/authentiq/v1/user/delete"
     }]
 };

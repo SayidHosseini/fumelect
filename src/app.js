@@ -35,7 +35,7 @@ app.use(express.urlencoded({
     extended: false
 }));
 
-app.use('/auth/v1/', indexRouter);
+app.use('/authentiq/v1/', indexRouter);
 
 
 // middleware responsible for checking if token exists (in needed routes)
@@ -66,8 +66,8 @@ app.use(async (req, res, next) => {
     next();
 });
 
-app.use('/auth/v1/validate', validateRouter);
-app.use('/auth/v1/user', userRouter);
+app.use('/authentiq/v1/validate', validateRouter);
+app.use('/authentiq/v1/user', userRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
