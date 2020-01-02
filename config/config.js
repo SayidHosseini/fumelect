@@ -1,5 +1,5 @@
 module.exports = {
-    dbURL: "mongodb://mongo:27017/auth",
+    dbURL: "mongodb://db:27017/authentiq",
     AuthenticationList: [{
         method: "GET",
         url: "/auth/v1/validate/token"

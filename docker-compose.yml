@@ -1,0 +1,36 @@
+version: '3.4'
+
+services:
+  db:
+    image: mvertes/alpine-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: authentiq
+      MONGO_INITDB_ROOT_PASSWORD: authentiqrocks
+    logging:
+      driver: 'none'
+    restart: unless-stopped
+    healthcheck:
+      test: "echo 'db.stats().ok' | mongo localhost:27017/authentiq --quiet"
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    volumes:
+      - db-data:/data/db
+
+  authentiq:
+    image: sayid/authentiq:1.0
+    depends_on:
+      - db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/auth/v1/heartbeat"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 1m
+    ports:
+      - '2000:2000'
+
+volumes:
+  db-data:
