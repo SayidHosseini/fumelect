@@ -2,7 +2,7 @@
 <img width="200px" src="https://github.com/SayidHosseini/AuthenticationService/blob/master/logo.png" align="right" />
 
 [![license_badge](https://img.shields.io/github/license/SayidHosseini/authentiq.svg)](https://github.com/SayidHosseini/authentiq/blob/master/LICENSE)
-[![version](https://images.microbadger.com/badges/version/sayid/authentiq:1.0.svg)](https://hub.docker.com/r/sayid/authentiq/)
+[![build_status_badge](https://img.shields.io/docker/cloud/build/sayid/authentiq.svg)](https://hub.docker.com/r/sayid/authentiq/)
 [![docker_build_badge](https://img.shields.io/docker/cloud/automated/sayid/authentiq.svg)](https://hub.docker.com/r/sayid/authentiq/)
 [![docker_image_badge](https://images.microbadger.com/badges/image/sayid/authentiq.svg)](https://hub.docker.com/r/sayid/authentiq/)
 [![docker_pulls_badge](https://img.shields.io/docker/pulls/sayid/authentiq.svg)](https://hub.docker.com/r/sayid/authentiq/)
