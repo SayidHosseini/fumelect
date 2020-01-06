@@ -19,7 +19,7 @@ services:
       - db-data:/data/db
 
   authentiq:
-    image: sayid/authentiq:1.0
+    image: sayid/authentiq:alpine-1
     depends_on:
       - db
     restart: unless-stopped
