@@ -1,16 +1,17 @@
 # Authentiq
-<img width="200px" src="https://github.com/SayidHosseini/AuthenticationService/blob/master/logo.png" align="right" />
-
 [![license_badge](https://img.shields.io/github/license/SayidHosseini/authentiq.svg)](https://github.com/SayidHosseini/authentiq/blob/master/LICENSE)
 [![build_status_badge](https://img.shields.io/docker/cloud/build/sayid/authentiq.svg)](https://hub.docker.com/r/sayid/authentiq/)
 [![docker_build_badge](https://img.shields.io/docker/cloud/automated/sayid/authentiq.svg)](https://hub.docker.com/r/sayid/authentiq/)
 [![docker_image_badge](https://images.microbadger.com/badges/image/sayid/authentiq.svg)](https://hub.docker.com/r/sayid/authentiq/)
 [![docker_pulls_badge](https://img.shields.io/docker/pulls/sayid/authentiq.svg)](https://hub.docker.com/r/sayid/authentiq/)
 
+<img width="200px" src="https://github.com/SayidHosseini/AuthenticationService/blob/master/logo.png" align="right" />
+
 This is a RESTful Authentication Service written in Node.js on express.js framework powered by MongoDB. It is intended that the developer use this as a module (microservice) in a project; rather than a standalone service since it is only a mean of authentication. That being said, if you plan to develop a service that includes authentication, it might be a good idea to have a head start and build on top of this project instead of starting one from scratch.
 
 API Reference is provided in the [wiki](https://github.com/SayidHosseini/authentiq/wiki) pages.
 
+<br/>
 <table>
       <tr><td valign="baseline"> :warning: </td><td> <strong>Authentiq</strong> provides <code>JWT</code> for <em>authentication</em> and <em>session management</em>. Currently, we do <strong>not</strong> generate unique key pairs for each new environment (this feature will be available soon). If you'd like to deploy this project in a production environment, it is very important to generate your own <em>public</em> / <em>private</em> key pair. The generated key pair should be placed in <code>src/jwt/</code> with the names <code>public.key</code> and <code>private.key</code>. </td></tr>
 </table>
