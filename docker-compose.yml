@@ -1,8 +1,8 @@
 version: '3.4'
 
 services:
-  db:
-    image: mvertes/alpine-mongo
+  authentiq-db:
+    image: sayid/alpine-mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: authentiq
       MONGO_INITDB_ROOT_PASSWORD: authentiqrocks
@@ -20,8 +20,10 @@ services:
 
   authentiq:
     image: sayid/authentiq:alpine-1
+    environment:
+      DB: mongodb://authentiq-db:27017/authentiq
     depends_on:
-      - db
+      - authentiq-db
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/auth/v1/heartbeat"]
