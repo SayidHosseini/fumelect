@@ -26,7 +26,7 @@ services:
       - authentiq-db
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/auth/v1/heartbeat"]
+      test: ["CMD", "curl", "-f", "http://localhost:2000/authentiq/v1/heartbeat"]
       interval: 20s
       timeout: 10s
       retries: 3
