@@ -6,7 +6,9 @@ FROM ${BASE_IMAGE_PREFIX}alpine
 ARG ARCH
 COPY qemu-${ARCH}-static /usr/bin
 
-RUN apk add --update npm
+LABEL maintainer="S. Saeid Hosseini <sayidhosseini@hotmail.com>"
+
+RUN apk add --update --no-cache npm curl
 
 WORKDIR /usr/src/authentiq
 COPY package*.json ./
