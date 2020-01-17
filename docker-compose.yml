@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     healthcheck:
       test: "echo 'db.stats().ok' | mongo localhost:27017/authentiq --quiet"
-      interval: 5s
+      interval: 45s
       timeout: 10s
       retries: 10
       start_period: 15s
@@ -27,12 +27,12 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:2000/authentiq/v1/heartbeat"]
-      interval: 20s
+      interval: 1m
       timeout: 10s
-      retries: 3
+      retries: 5
       start_period: 1m
     ports:
-      - '2000:2000'
+      - '2052:2000'
 
 volumes:
   db-data:
