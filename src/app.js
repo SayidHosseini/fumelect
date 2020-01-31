@@ -38,7 +38,7 @@ app.use(async (req, res, next) => {
                 return res.status(rm.noCredentials.code).json(rm.noCredentials.msg);
             } else {
                 const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
-                if(!await tokenResponse(token, res, next)) {
+                if(!await tokenResponse(token, req, res, next)) {
                     return;
                 }
                 else {

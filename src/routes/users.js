@@ -41,7 +41,7 @@ router.post('/register', (req, res, next) => {
             }
             return next(err);
         }
-
+ 
         // Log the user in automatically
         let payload = {
             email
@@ -51,6 +51,7 @@ router.post('/register', (req, res, next) => {
         };
         let token = jwt.sign(payload, signOptions);
         let newLoggedIn = new LoggedIn({
+            [sn.userID]: usr._id,
             token
         });
 
@@ -60,7 +61,12 @@ router.post('/register', (req, res, next) => {
             }
 
             var body = {
-                message: rm.registerSuccessful.msg.message,
+                [sn.message]: rm.registerSuccessful.msg.message,
+                [sn.user]: {
+                    [sn.userID]: usr._id,
+                    [sn.email]: usr.email,
+                    [sn.role]: usr.role
+                },
                 token
             };
             return res.status(rm.registerSuccessful.code).json(body);
@@ -95,7 +101,7 @@ router.post('/login', (req, res, next) => {
             if (!isMatched) {
                 return res.status(rm.invalidUserPass.code).json(rm.invalidUserPass.msg);
             }
-
+            
             let payload = {
                 email
             };
@@ -104,6 +110,7 @@ router.post('/login', (req, res, next) => {
             };
             let token = jwt.sign(payload, signOptions);
             let newLoggedIn = new LoggedIn({
+                [sn.userID]: user._id,
                 token
             });
 
@@ -183,10 +190,12 @@ router.get('/list', (req, res, next) => {
         };
 
         result.forEach(({
+            _id,
             email,
             role
         }) => {
             let user = {
+                [sn.userID]: _id,
                 [sn.email]: email,
                 [sn.role]: role
             };
@@ -209,6 +218,7 @@ router.get('/role', (req, res, next) => {
         }
 
         var body = {
+            [sn.userID]: user._id,
             [sn.email]: user.email,
             [sn.role]: user.role
         };
@@ -309,12 +319,18 @@ router.delete('/delete', (req, res, next) => {
                 return res.status(rm.primaryAdminDeleteFail.code).json(rm.primaryAdminDeleteFail.msg);
             }
 
-            User.removeUserByEmail(email, (err, rec) => {
+            LoggedIn.removeRecordByUserID(user._id, (err, rec) => {
                 if (err || !rec) {
                     return next(err);
                 }
 
-                return res.status(rm.userDeletedSuccess.code).json(rm.userDeletedSuccess.msg);
+                User.removeUserByEmail(email, (err, rec) => {
+                    if (err || !rec) {
+                        return next(err);
+                    }
+    
+                    return res.status(rm.userDeletedSuccess.code).json(rm.userDeletedSuccess.msg);
+                });
             });
         });
     }).catch((err) => {
