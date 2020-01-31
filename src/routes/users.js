@@ -11,6 +11,7 @@ const jwt = require('../jwt/jwtService');
 
 const rm = require('../static/responseMessages');
 const sn = require('../static/names');
+const config = require('../../config/config');
 
 router.post('/register', (req, res, next) => {
     const {
@@ -171,7 +172,7 @@ router.put('/changePassword', (req, res, next) => {
 
 router.get('/list', (req, res, next) => {
     // TODO: Restrict to admin users only
-    
+
     User.getUsers((err, result) => {
         if (err) {
             return next(err);
@@ -246,7 +247,7 @@ router.put('/role', (req, res, next) => {
             if (!requestUser) {
                 return res.status(rm.emailNotFound.code).json(rm.emailNotFound.msg);
             }
-            if (requestUser.email === sn.adminEmail) {
+            if([config.adminUsername, process.env.AUTHENTIQ_ADMIN_USERNAME].includes(requestUser.email)) {
                 return res.status(rm.primaryAdminChangeRoleFail.code).json(rm.primaryAdminChangeRoleFail.msg);
             }
             if (requestUser.role === role) {
@@ -304,7 +305,7 @@ router.delete('/delete', (req, res, next) => {
             if (!isMatched) {
                 return res.status(rm.invalidPassword.code).json(rm.invalidPassword.msg);
             }
-            if (user.email === sn.adminEmail) {
+            if([config.adminUsername, process.env.AUTHENTIQ_ADMIN_USERNAME].includes(user.email)) {
                 return res.status(rm.primaryAdminDeleteFail.code).json(rm.primaryAdminDeleteFail.msg);
             }
 
