@@ -1,5 +1,9 @@
 module.exports = {
-    dbURL: "mongodb://db:27017/authentiq",
+    dbHost: "authentiq-db",
+    dbPort: "27017",
+    dbName: "authentiq",
+    adminUsername: "admin@authentiq.com",
+    adminPassword: "admin1234",
     AuthenticationList: [{
         method: "GET",
         url: "/authentiq/v1/validate/token"
