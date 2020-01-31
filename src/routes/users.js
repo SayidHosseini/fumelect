@@ -125,7 +125,7 @@ router.post('/login', (req, res, next) => {
     });
 });
 
-router.put('/changePassword', (req, res, next) => {
+router.put('/password', (req, res, next) => {
     const {
         error
     } = Joi.validate(req.body, schemas.changePassword);
