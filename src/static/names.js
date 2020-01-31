@@ -4,6 +4,8 @@ module.exports = {
     userRole: "user",
     guestRole: "guest",
     email: "email",
+    user: "user",
+    userID: "userID",
     message: "message",
     production: "production",
     dbReady: "DatabaseReady",
