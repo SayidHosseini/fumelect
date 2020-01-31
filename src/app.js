@@ -5,8 +5,8 @@ app.use(express.urlencoded({
     extended: false
 }));
 
-const dbInit = require('./scripts/dbInit');
-dbInit.connect(app);
+const db = require('./scripts/database');
+db.init(app);
 
 const logger = require('morgan');
 app.use(logger('combined'));
