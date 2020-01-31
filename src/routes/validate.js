@@ -15,7 +15,8 @@ router.get('/token', (req, res, next) => {
         }
 
         var body = {
-            message: rm.loggedIn.msg.message,
+            [sn.message]: rm.loggedIn.msg.message,
+            [sn.userID]: user._id,
             [sn.email]: user.email
         };
         return res.status(rm.loggedIn.code).json(body);

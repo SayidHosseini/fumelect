@@ -3,7 +3,7 @@ const User = require('./../models/user');
 const rm = require('../static/responseMessages');
 const jwt = require('../jwt/jwtService');
 
-module.exports.tokenResponse = async (token, res, next) => {
+module.exports.tokenResponse = async (token, req, res, next) => {
     // TODO: extract email and role, add it to user request for further processing 
     try {
         let result = await LoggedIn.getRecordByToken(token);
@@ -31,7 +31,7 @@ module.exports.tokenResponse = async (token, res, next) => {
         next(err);
         return false;
     }
-
+    
     return true;
 }
 

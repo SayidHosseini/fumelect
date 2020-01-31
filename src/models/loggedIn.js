@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const config = require('../../config/config');
 
 const LoggedInSchema = mongoose.Schema({
+    userID: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+    },
     token: {
         type: String,
         required: true,
@@ -29,4 +33,11 @@ module.exports.removeRecordByToken = (token, callback) => {
         token
     };
     LoggedIn.deleteOne(query, callback);
+};
+
+module.exports.removeRecordByUserID = (userID, callback) => {
+    const query = {
+        userID
+    };
+    LoggedIn.deleteMany(query, callback);
 };
