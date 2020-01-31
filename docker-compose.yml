@@ -1,6 +1,34 @@
 version: '3.4'
 
 services:
+  authentiq:
+    image: sayid/authentiq:${AUTHENTIQ_VERSION:-alpine-1}
+    ports:
+      - ${AUTHENTIQ_PORT-:2052}:2000
+    environment:
+      NODE_ENV: ${AUTHENTIQ_ENV-:production}
+      AUTHENTIQ_DOMAIN: ${AUTHENTIQ_DOMAIN}
+      AUTHENTIQ_DB_HOST: authentiq-db
+      AUTHENTIQ_DB_PORT: 27017
+      AUTHENTIQ_DB_NAME: authentiq
+      AUTHENTIQ_DB_USERNAME: authentiq
+      AUTHENTIQ_DB_PASSWORD: authentiqrocks
+      AUTHENTIQ_ADMIN_USERNAME: ${AUTHENTIQ_ADMIN_USERNAME}
+      AUTHENTIQ_ADMIN_PASSWORD: ${AUTHENTIQ_ADMIN_PASSWORD}
+      AUTHENTIQ_SMTP_HOST: ${AUTHENTIQ_SMTP_HOST}
+      AUTHENTIQ_SMTP_PORT: ${AUTHENTIQ_SMTP_PORT}
+      AUTHENTIQ_SMTP_USERNAME: ${AUTHENTIQ_SMTP_USERNAME}
+      AUTHENTIQ_SMTP_PASSWORD: ${AUTHENTIQ_SMTP_PASSWORD}
+    depends_on:
+      - authentiq-db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2000/authentiq/v1/heartbeat"]
+      interval: 1m
+      timeout: 10s
+      retries: 5
+      start_period: 1m    
+
   authentiq-db:
     image: sayid/alpine-mongo
     environment:
@@ -17,22 +45,6 @@ services:
       start_period: 15s
     volumes:
       - db-data:/data/db
-
-  authentiq:
-    image: sayid/authentiq:alpine-1
-    environment:
-      DB: mongodb://authentiq-db:27017/authentiq
-    depends_on:
-      - authentiq-db
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:2000/authentiq/v1/heartbeat"]
-      interval: 1m
-      timeout: 10s
-      retries: 5
-      start_period: 1m
-    ports:
-      - '2052:2000'
 
 volumes:
   db-data:
