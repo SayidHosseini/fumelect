@@ -130,5 +130,11 @@ module.exports = {
         msg: {
             message: "Cannot delete the primary admin of the service!"
         }
+    },
+    internalServerError: {
+        code: 500,
+        msg: {
+            message: "Something went wrong on our end! Try again later..."
+        }
     }
 };
