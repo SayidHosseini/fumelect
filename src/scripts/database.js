@@ -15,7 +15,7 @@ exports.init = (app) => {
     const dbPassword = process.env.AUTHENTIQ_DB_PASSWORD;
 
     if (dbHost && dbPort && dbName && dbUsername && dbPassword) {
-        dbURL = `mongodb://${dbUsername}:${dbPassword}@${dbHost}:${dbPort}/${dbName}`;
+        dbURL = `mongodb://${dbUsername}:${dbPassword}@${dbHost}:${dbPort}/${dbName}?authSource=admin`;
         console.log(lm.connectToDBUserPass, dbURL);
     }
     else {
