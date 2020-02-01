@@ -44,7 +44,7 @@ services:
       retries: 10
       start_period: 15s
     volumes:
-      - db-data:/data/db
+      - authentiq-db-data:/data/db
 
 volumes:
-  db-data:
+  authentiq-db-data:
