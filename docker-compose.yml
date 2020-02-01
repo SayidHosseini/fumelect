@@ -4,7 +4,7 @@ services:
   authentiq:
     image: sayid/authentiq:${AUTHENTIQ_VERSION:-alpine-1}
     ports:
-      - ${AUTHENTIQ_PORT-:2052}:2000
+      - ${AUTHENTIQ_PORT:-2052}:2000
     environment:
       NODE_ENV: ${AUTHENTIQ_ENV-:production}
       AUTHENTIQ_DOMAIN: ${AUTHENTIQ_DOMAIN}
@@ -30,7 +30,7 @@ services:
       start_period: 1m    
 
   authentiq-db:
-    image: sayid/alpine-mongo
+    image: sayid/mongo:alpine
     environment:
       MONGO_INITDB_ROOT_USERNAME: authentiq
       MONGO_INITDB_ROOT_PASSWORD: authentiqrocks
