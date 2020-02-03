@@ -62,8 +62,8 @@ const createAdmin = async (app) => {
     });
     const user = await User.getUserByEmail(adminUser.email);
     if (user) {
-        User.changePassword(user, adminPassword, (err, usr) => {
-            if (err || !usr) {
+        User.changePassword(user, adminPassword, (err, user) => {
+            if (err || !user) {
                 console.error(lm.createAdminFailed);
                 process.exit(1);
             }
