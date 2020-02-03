@@ -7,7 +7,7 @@ const config = require('../../config/config');
 const lm = require('../static/logMessages');
 const sn = require('../static/names');
 
-exports.init = (app) => {
+module.exports.init = (app) => {
     const dbHost = process.env.AUTHENTIQ_DB_HOST || config.dbHost;
     const dbPort = process.env.AUTHENTIQ_DB_PORT || config.dbPort;
     const dbName = process.env.AUTHENTIQ_DB_NAME || config.dbName;
