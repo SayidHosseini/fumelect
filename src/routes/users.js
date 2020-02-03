@@ -34,8 +34,8 @@ router.post('/register', (req, res, next) => {
         verified: false
     });
 
-    User.createUser(newUser, (err, usr) => {
-        if (err || !usr) {
+    User.createUser(newUser, (err, user) => {
+        if (err || !user) {
             if (err.code === sn.duplicateError) {
                 return res.status(rm.emailExists.code).json(rm.emailExists.msg);
             }
@@ -51,7 +51,7 @@ router.post('/register', (req, res, next) => {
         };
         let token = jwt.sign(payload, signOptions);
         let newLoggedIn = new LoggedIn({
-            [sn.userID]: usr._id,
+            [sn.userID]: user._id,
             token
         });
 
@@ -63,9 +63,9 @@ router.post('/register', (req, res, next) => {
             var body = {
                 [sn.message]: rm.registerSuccessful.msg.message,
                 [sn.user]: {
-                    [sn.userID]: usr._id,
-                    [sn.email]: usr.email,
-                    [sn.role]: usr.role
+                    [sn.userID]: user._id,
+                    [sn.email]: user.email,
+                    [sn.role]: user.role
                 },
                 token
             };
@@ -164,8 +164,8 @@ router.put('/password', (req, res, next) => {
                 return res.status(rm.invalidPassword.code).json(rm.invalidPassword.msg);
             }
 
-            User.changePassword(user, newPassword, (err, usr) => {
-                if (err || !usr) {
+            User.changePassword(user, newPassword, (err, user) => {
+                if (err || !user) {
                     return next(err);
                 }
 
