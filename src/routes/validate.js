@@ -14,7 +14,7 @@ router.get('/token', (req, res, next) => {
             return res.status(rm.emailNotFound.code).json(rm.emailNotFound.msg);
         }
 
-        var body = {
+        const body = {
             [sn.message]: rm.loggedIn.msg.message,
             [sn.userID]: user._id,
             [sn.email]: user.email

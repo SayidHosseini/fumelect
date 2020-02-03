@@ -6,7 +6,7 @@ const jwt = require('../jwt/jwtService');
 module.exports.tokenResponse = async (token, req, res, next) => {
     // TODO: extract email and role, add it to user request for further processing 
     try {
-        let result = await LoggedIn.getRecordByToken(token);
+        const result = await LoggedIn.getRecordByToken(token);
         if (!result) {
             res.status(rm.notLoggedIn.code).json(rm.notLoggedIn.msg);
             return false;
@@ -21,7 +21,7 @@ module.exports.tokenResponse = async (token, req, res, next) => {
     }
 
     try {
-        let user = await User.getUserByEmail(jwt.decode(token).payload.email); // check if user exist
+        const user = await User.getUserByEmail(jwt.decode(token).payload.email); // check if user exist
         if (!user) {
             res.status(rm.sessionInvalid.code).json(rm.sessionInvalid.msg);
             return false;
