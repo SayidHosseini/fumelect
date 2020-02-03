@@ -27,7 +27,7 @@ router.post('/register', (req, res, next) => {
         password
     } = req.body;
 
-    let newUser = new User({
+    const newUser = new User({
         email,
         password,
         role: sn.userRole,
@@ -43,14 +43,14 @@ router.post('/register', (req, res, next) => {
         }
 
         // Log the user in automatically
-        let payload = {
+        const payload = {
             email
         };
-        let signOptions = {
+        const signOptions = {
             subject: email
         };
-        let token = jwt.sign(payload, signOptions);
-        let newLoggedIn = new LoggedIn({
+        const token = jwt.sign(payload, signOptions);
+        const newLoggedIn = new LoggedIn({
             [sn.userID]: user._id,
             token
         });
@@ -60,7 +60,7 @@ router.post('/register', (req, res, next) => {
                 return next(err);
             }
 
-            var body = {
+            const body = {
                 [sn.message]: rm.registerSuccessful.msg.message,
                 [sn.user]: {
                     [sn.userID]: user._id,
@@ -102,14 +102,14 @@ router.post('/login', (req, res, next) => {
                 return res.status(rm.invalidUserPass.code).json(rm.invalidUserPass.msg);
             }
 
-            let payload = {
+            const payload = {
                 email
             };
-            let signOptions = {
+            const signOptions = {
                 subject: email
             };
-            let token = jwt.sign(payload, signOptions);
-            let newLoggedIn = new LoggedIn({
+            const token = jwt.sign(payload, signOptions);
+            const newLoggedIn = new LoggedIn({
                 [sn.userID]: user._id,
                 token
             });
@@ -121,7 +121,7 @@ router.post('/login', (req, res, next) => {
                     return next(err);
                 }
 
-                var body = {
+                const body = {
                     token
                 };
                 return res.status(rm.loggedInSuccess.code).json(body);
@@ -185,7 +185,7 @@ router.get('/list', (req, res, next) => {
             return next(err);
         }
 
-        let body = {
+        const body = {
             usersList: []
         };
 
@@ -194,7 +194,7 @@ router.get('/list', (req, res, next) => {
             email,
             role
         }) => {
-            let user = {
+            const user = {
                 [sn.userID]: _id,
                 [sn.email]: email,
                 [sn.role]: role
@@ -217,7 +217,7 @@ router.get('/role', (req, res, next) => {
             return res.status(rm.emailNotFound.code).json(rm.emailNotFound.msg);
         }
 
-        var body = {
+        const body = {
             [sn.userID]: user._id,
             [sn.email]: user.email,
             [sn.role]: user.role
