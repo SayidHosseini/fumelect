@@ -31,6 +31,8 @@ services:
 
   authentiq-db:
     image: sayid/mongo:${AUTHENTIQ_DB_VERSION:-alpine}
+    ports:
+      - 12345:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: authentiq
       MONGO_INITDB_ROOT_PASSWORD: authentiqrocks

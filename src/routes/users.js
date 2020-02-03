@@ -41,7 +41,7 @@ router.post('/register', (req, res, next) => {
             }
             return next(err);
         }
- 
+
         // Log the user in automatically
         let payload = {
             email
@@ -101,7 +101,7 @@ router.post('/login', (req, res, next) => {
             if (!isMatched) {
                 return res.status(rm.invalidUserPass.code).json(rm.invalidUserPass.msg);
             }
-            
+
             let payload = {
                 email
             };
@@ -257,7 +257,7 @@ router.put('/role', (req, res, next) => {
             if (!requestUser) {
                 return res.status(rm.emailNotFound.code).json(rm.emailNotFound.msg);
             }
-            if([config.adminUsername, process.env.AUTHENTIQ_ADMIN_USERNAME].includes(requestUser.email)) {
+            if ([config.adminUsername, process.env.AUTHENTIQ_ADMIN_USERNAME].includes(requestUser.email)) {
                 return res.status(rm.primaryAdminChangeRoleFail.code).json(rm.primaryAdminChangeRoleFail.msg);
             }
             if (requestUser.role === role) {
@@ -315,7 +315,7 @@ router.delete('/delete', (req, res, next) => {
             if (!isMatched) {
                 return res.status(rm.invalidPassword.code).json(rm.invalidPassword.msg);
             }
-            if([config.adminUsername, process.env.AUTHENTIQ_ADMIN_USERNAME].includes(user.email)) {
+            if ([config.adminUsername, process.env.AUTHENTIQ_ADMIN_USERNAME].includes(user.email)) {
                 return res.status(rm.primaryAdminDeleteFail.code).json(rm.primaryAdminDeleteFail.msg);
             }
 
@@ -328,7 +328,7 @@ router.delete('/delete', (req, res, next) => {
                     if (err || !rec) {
                         return next(err);
                     }
-    
+
                     return res.status(rm.userDeletedSuccess.code).json(rm.userDeletedSuccess.msg);
                 });
             });

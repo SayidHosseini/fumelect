@@ -102,7 +102,7 @@ module.exports = {
         }
     },
     roleNotChanged: {
-        code:  200,
+        code: 200,
         msg: {
             message: "The requested role has already been set!"
         }
