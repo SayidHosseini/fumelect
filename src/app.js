@@ -38,7 +38,7 @@ app.use(async (req, res, next) => {
                 return res.status(rm.noCredentials.code).json(rm.noCredentials.msg);
             } else {
                 const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
-                if(!await tokenResponse(token, req, res, next)) {
+                if (!await tokenResponse(token, req, res, next)) {
                     return;
                 }
                 else {
@@ -61,7 +61,7 @@ app.use((req, res, next) => {
 // error handler
 app.use((err, req, res, next) => {
     console.error(err);
-    if(process.env.NODE_ENV !== sn.production) {
+    if (process.env.NODE_ENV !== sn.production) {
         return res.contentType('text').status(err.status || 500).send(err.stack);
     }
     return res.status(err.status || rm.internalServerError.code).json(rm.internalServerError.msg);

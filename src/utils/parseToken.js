@@ -31,7 +31,7 @@ module.exports.tokenResponse = async (token, req, res, next) => {
         next(err);
         return false;
     }
-    
+
     return true;
 }
 

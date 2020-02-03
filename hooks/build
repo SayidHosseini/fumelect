@@ -20,16 +20,16 @@ echo "✅ Will build the following architectures: $verified_build_architectures"
 echo "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"
 
 for arch in ${build_architectures[@]}; do
-  echo "✅ building $arch"
-  echo "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"
+    echo "✅ building $arch"
+    echo "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"
 
-  BASE_IMAGE_PREFIX="${base_image_prefix_map[${arch}]}"
-  docker build \
-    --build-arg BASE_IMAGE_PREFIX=${BASE_IMAGE_PREFIX} \
-    --build-arg ARCH=${arch} \
-    --file $DOCKERFILE_PATH \
-    --tag "${IMAGE_NAME}-${arch}"  \
-    .
+    BASE_IMAGE_PREFIX="${base_image_prefix_map[${arch}]}"
+    docker build \
+        --build-arg BASE_IMAGE_PREFIX=${BASE_IMAGE_PREFIX} \
+        --build-arg ARCH=${arch} \
+        --file $DOCKERFILE_PATH \
+        --tag "${IMAGE_NAME}-${arch}" \
+        .
 done
 
 echo "✅ images built:"
@@ -41,28 +41,28 @@ tempdir=$(mktemp -d -t yolo.XXXXXXXX)
 cd $tempdir
 
 for arch in ${build_architectures[@]}; do
-  echo "✅ yolo fixing platform $arch"
-  echo "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"
+    echo "✅ yolo fixing platform $arch"
+    echo "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"
 
-  manifest_arch=${docker_to_manifest_map[${arch}]}
-  docker save "${IMAGE_NAME}-${arch}" | tar xv
+    manifest_arch=${docker_to_manifest_map[${arch}]}
+    docker save "${IMAGE_NAME}-${arch}" | tar xv
 
-  for filename in */json; do
-    [ -e "$filename" ] || continue
-    jq --compact-output 'del(.architecture)' < "$filename" | sponge "$filename"
-  done
+    for filename in */json; do
+        [ -e "$filename" ] || continue
+        jq --compact-output 'del(.architecture)' <"$filename" | sponge "$filename"
+    done
 
-  for filename in *.json; do
-    [ -e "$filename" ] || continue
-    ! [ $filename = "manifest.json" ] || continue
+    for filename in *.json; do
+        [ -e "$filename" ] || continue
+        ! [ $filename = "manifest.json" ] || continue
 
-    jq --arg architecture "$manifest_arch" \
-       --compact-output '.architecture=$architecture' < "$filename" | sponge "$filename"
-  done
+        jq --arg architecture "$manifest_arch" \
+            --compact-output '.architecture=$architecture' <"$filename" | sponge "$filename"
+    done
 
-  tar cv . | docker load
-  rm -rf $tempdir/*
+    tar cv . | docker load
+    rm -rf $tempdir/*
 done
 
-trap "exit 1"          HUP INT PIPE QUIT TERM
+trap "exit 1" HUP INT PIPE QUIT TERM
 trap "rm -rf $tempdir" EXIT
