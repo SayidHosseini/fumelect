@@ -30,7 +30,7 @@ services:
       start_period: 1m    
 
   authentiq-db:
-    image: sayid/mongo:alpine
+    image: sayid/mongo:${AUTHENTIQ_DB_VERSION:-alpine}
     environment:
       MONGO_INITDB_ROOT_USERNAME: authentiq
       MONGO_INITDB_ROOT_PASSWORD: authentiqrocks
