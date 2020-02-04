@@ -14,18 +14,12 @@ const sn = require('../static/names');
 const config = require('../../config/config');
 
 router.post('/register', (req, res, next) => {
-    const {
-        error
-    } = Joi.validate(req.body, schemas.register);
-
+    const { error } = Joi.validate(req.body, schemas.register);
     if (error) {
         return res.status(rm.invalidParameters.code).json(rm.invalidParameters.msg);
     }
 
-    const {
-        email,
-        password
-    } = req.body;
+    const { email, password } = req.body;
 
     const newUser = new User({
         email,
@@ -43,12 +37,8 @@ router.post('/register', (req, res, next) => {
         }
 
         // Log the user in automatically
-        const payload = {
-            email
-        };
-        const signOptions = {
-            subject: email
-        };
+        const payload = { email };
+        const signOptions = { subject: email };
         const token = jwt.sign(payload, signOptions);
         const newLoggedIn = new LoggedIn({
             [sn.userID]: user._id,
@@ -75,19 +65,12 @@ router.post('/register', (req, res, next) => {
 });
 
 router.post('/login', (req, res, next) => {
-    const {
-        error
-    } = Joi.validate(req.body, schemas.login);
-
+    const { error } = Joi.validate(req.body, schemas.login);
     if (error) {
         return res.status(rm.invalidParameters.code).json(rm.invalidParameters.msg);
     }
 
-    const {
-        email,
-        password
-    } = req.body;
-
+    const { email, password } = req.body;
 
     // TODO: Make this part reusable and use it in Register    
     User.getUserByEmail(email).then((user) => {
@@ -102,12 +85,8 @@ router.post('/login', (req, res, next) => {
                 return res.status(rm.invalidUserPass.code).json(rm.invalidUserPass.msg);
             }
 
-            const payload = {
-                email
-            };
-            const signOptions = {
-                subject: email
-            };
+            const payload = { email };
+            const signOptions = { subject: email };
             const token = jwt.sign(payload, signOptions);
             const newLoggedIn = new LoggedIn({
                 [sn.userID]: user._id,
@@ -121,9 +100,7 @@ router.post('/login', (req, res, next) => {
                     return next(err);
                 }
 
-                const body = {
-                    token
-                };
+                const body = { token };
                 return res.status(rm.loggedInSuccess.code).json(body);
             });
         });
@@ -133,23 +110,14 @@ router.post('/login', (req, res, next) => {
 });
 
 router.put('/password', (req, res, next) => {
-    const {
-        error
-    } = Joi.validate(req.body, schemas.changePassword);
-
+    const { error } = Joi.validate(req.body, schemas.changePassword);
     if (error) {
         return res.status(rm.invalidParameters.code).json(rm.invalidParameters.msg);
     }
 
     const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
-    const {
-        password,
-        newPassword
-    } = req.body;
-
-    const {
-        email
-    } = jwt.decode(token).payload;
+    const { email } = jwt.decode(token).payload;
+    const { password, newPassword } = req.body;
 
     User.getUserByEmail(email).then((user) => {
         if (!user) {
@@ -185,9 +153,7 @@ router.get('/list', (req, res, next) => {
             return next(err);
         }
 
-        const body = {
-            usersList: []
-        };
+        const body = { usersList: [] };
 
         result.forEach(({
             _id,
@@ -229,18 +195,12 @@ router.get('/role', (req, res, next) => {
 });
 
 router.put('/role', (req, res, next) => {
-    const {
-        error
-    } = Joi.validate(req.body, schemas.changeRole);
-
+    const { error } = Joi.validate(req.body, schemas.changeRole);
     if (error) {
         return res.status(rm.invalidParameters.code).json(rm.invalidParameters.msg);
     }
 
-    const {
-        email,
-        role
-    } = req.body;
+    const { email, role } = req.body;
     const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
 
     User.getUserByEmail(jwt.decode(token).payload.email).then((tokenUser) => { // get the user of token
@@ -286,22 +246,14 @@ router.delete('/logout', (req, res, next) => {
 });
 
 router.delete('/delete', (req, res, next) => {
-    const {
-        error
-    } = Joi.validate(req.body, schemas.deleteUser);
-
+    const { error } = Joi.validate(req.body, schemas.deleteUser);
     if (error) {
         return res.status(rm.invalidParameters.code).json(rm.invalidParameters.msg);
     }
 
     const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
-    const {
-        password
-    } = req.body;
-
-    const {
-        email
-    } = jwt.decode(token).payload;
+    const { email } = jwt.decode(token).payload;
+    const { password } = req.body;
 
     User.getUserByEmail(email).then((user) => {
         if (!user) {

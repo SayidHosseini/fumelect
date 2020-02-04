@@ -50,15 +50,12 @@ module.exports.getUsers = (callback) => {
 };
 
 module.exports.getUserByEmail = (email) => {
-    const query = {
-        email
-    };
-
+    const query = { email };
     return User.findOne(query);
 };
 
 module.exports.comparePassword = (password, dbPassword, callback) => {
-    bcrypt.compare(password, dbPassword, (err, res) => {
+    bcrypt.compare(password, dbPassword, (res) => {
         if (res) {
             isMatched = true;
         } else {
@@ -91,9 +88,6 @@ module.exports.changePassword = (user, newPassword, callback) => {
 };
 
 module.exports.removeUserByEmail = (email, callback) => {
-    const query = {
-        email
-    };
-
+    const query = { email };
     User.deleteOne(query, callback);
 };

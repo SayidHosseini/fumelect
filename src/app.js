@@ -1,9 +1,7 @@
 const express = require('express');
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({
-    extended: false
-}));
+app.use(express.urlencoded({ extended: false }));
 
 const db = require('./scripts/database');
 db.init(app);
@@ -22,17 +20,12 @@ const tokenResponse = require('./utils/parseToken').tokenResponse;
 const rm = require('./static/responseMessages');
 const sn = require('./static/names');
 
-// middleware responsible for checking if token exists (in needed routes)
-// routers that do not require token should be declared before this middleware
+// for checking if token exists
 app.use(async (req, res, next) => {
     // TODO: Modify the for behavior to add middleware to each API
     // check if the request is included in checking
     for (let index = 0; index < config.AuthenticationList.length; index++) {
-        const {
-            method,
-            url
-        } = config.AuthenticationList[index];
-
+        const { method, url } = config.AuthenticationList[index];
         if (method === req.method && url === req.path) {
             if (!req.headers.authorization) {
                 return res.status(rm.noCredentials.code).json(rm.noCredentials.msg);
@@ -59,7 +52,7 @@ app.use((req, res, next) => {
 });
 
 // error handler
-app.use((err, req, res, next) => {
+app.use((err, res) => {
     console.error(err);
     if (process.env.NODE_ENV !== sn.production) {
         return res.contentType('text').status(err.status || 500).send(err.stack);
