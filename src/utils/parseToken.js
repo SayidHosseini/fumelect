@@ -11,7 +11,7 @@ module.exports.tokenResponse = async (token, req, res, next) => {
             res.status(rm.notLoggedIn.code).json(rm.notLoggedIn.msg);
             return false;
         }
-        if (!validateToken(token)) {
+        if (!result.valid || !validateToken(token)) {
             res.status(rm.sessionInvalid.code).json(rm.sessionInvalid.msg);
             return false;
         }

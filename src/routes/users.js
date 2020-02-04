@@ -277,7 +277,7 @@ router.put('/role', (req, res, next) => {
 
 router.delete('/logout', (req, res, next) => {
     const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
-    LoggedIn.removeRecordByToken(token, (err) => {
+    LoggedIn.revokeToken(token, (err) => {
         if (err) {
             return next(err);
         }
@@ -319,7 +319,7 @@ router.delete('/delete', (req, res, next) => {
                 return res.status(rm.primaryAdminDeleteFail.code).json(rm.primaryAdminDeleteFail.msg);
             }
 
-            LoggedIn.removeRecordByUserID(user._id, (err, rec) => {
+            LoggedIn.revokeAllTokens(user._id, (err, rec) => {
                 if (err || !rec) {
                     return next(err);
                 }
