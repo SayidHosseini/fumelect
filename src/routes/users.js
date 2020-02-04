@@ -8,7 +8,6 @@ const User = require('../models/user');
 const LoggedIn = require('../models/loggedIn');
 
 const jwt = require('../jwt/jwtService');
-
 const rm = require('../static/responseMessages');
 const sn = require('../static/names');
 const config = require('../../config/config');
@@ -16,7 +15,7 @@ const config = require('../../config/config');
 router.post('/register', (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.register);
     if (error) {
-        return res.status(rm.invalidParameters.code).json(rm.invalidParameters.msg);
+        return res.deliver(rm.invalidParameters);
     }
 
     const { email, password } = req.body;
@@ -31,7 +30,7 @@ router.post('/register', (req, res, next) => {
     User.createUser(newUser, (err, user) => {
         if (err || !user) {
             if (err.code === sn.duplicateError) {
-                return res.status(rm.emailExists.code).json(rm.emailExists.msg);
+                return res.deliver(rm.emailExists);
             }
             return next(err);
         }
@@ -59,7 +58,7 @@ router.post('/register', (req, res, next) => {
                 },
                 token
             };
-            return res.status(rm.registerSuccessful.code).json(body);
+            return res.deliver(rm.registerSuccessful, body);
         });
     });
 });
@@ -67,7 +66,7 @@ router.post('/register', (req, res, next) => {
 router.post('/login', (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.login);
     if (error) {
-        return res.status(rm.invalidParameters.code).json(rm.invalidParameters.msg);
+        return res.deliver(rm.invalidParameters);
     }
 
     const { email, password } = req.body;
@@ -75,14 +74,14 @@ router.post('/login', (req, res, next) => {
     // TODO: Make this part reusable and use it in Register    
     User.getUserByEmail(email).then((user) => {
         if (!user) {
-            return res.status(rm.invalidUserPass.code).json(rm.invalidUserPass.msg);
+            return res.deliver(rm.invalidUserPass);
         }
         User.comparePassword(password, user.password, (err) => {
             if (err) {
                 return next(err);
             }
             if (!isMatched) {
-                return res.status(rm.invalidUserPass.code).json(rm.invalidUserPass.msg);
+                return res.deliver(rm.invalidUserPass);
             }
 
             const payload = { email };
@@ -95,13 +94,14 @@ router.post('/login', (req, res, next) => {
 
             LoggedIn.createLoggedIn(newLoggedIn, (err) => {
                 if (err) {
-                    if (err.code === sn.duplicateError)
-                        return res.status(rm.tooManyRequests.code).json(rm.tooManyRequests.msg);
+                    if (err.code === sn.duplicateError) {
+                        return res.deliver(rm.tooManyRequests);
+                    }
                     return next(err);
                 }
 
                 const body = { token };
-                return res.status(rm.loggedInSuccess.code).json(body);
+                return res.deliver(rm.loggedInSuccess, body);
             });
         });
     }).catch((err) => {
@@ -112,7 +112,7 @@ router.post('/login', (req, res, next) => {
 router.put('/password', (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.changePassword);
     if (error) {
-        return res.status(rm.invalidParameters.code).json(rm.invalidParameters.msg);
+        return res.deliver(rm.invalidParameters);
     }
 
     const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
@@ -121,7 +121,7 @@ router.put('/password', (req, res, next) => {
 
     User.getUserByEmail(email).then((user) => {
         if (!user) {
-            return res.status(rm.emailNotFound.code).json(rm.emailNotFound.msg);
+            return res.deliver(rm.emailNotFound);
         }
 
         User.comparePassword(password, user.password, (err) => {
@@ -129,7 +129,7 @@ router.put('/password', (req, res, next) => {
                 return next(err);
             }
             if (!isMatched) {
-                return res.status(rm.invalidPassword.code).json(rm.invalidPassword.msg);
+                return res.deliver(rm.invalidPassword);
             }
 
             User.changePassword(user, newPassword, (err, user) => {
@@ -137,7 +137,7 @@ router.put('/password', (req, res, next) => {
                     return next(err);
                 }
 
-                return res.status(rm.changePasswordSuccess.code).json(rm.changePasswordSuccess.msg);
+                return res.deliver(rm.changePasswordSuccess);
             });
         });
     }).catch((err) => {
@@ -169,7 +169,7 @@ router.get('/list', (req, res, next) => {
             body.usersList.push(user);
         });
 
-        return res.status(rm.loggedIn.code).json(body);
+        return res.deliver(rm.loggedIn, body);
     });
 });
 
@@ -180,7 +180,7 @@ router.get('/role', (req, res, next) => {
     const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
     User.getUserByEmail(jwt.decode(token).payload.email).then((user) => {
         if (!user) {
-            return res.status(rm.emailNotFound.code).json(rm.emailNotFound.msg);
+            return res.deliver(rm.emailNotFound);
         }
 
         const body = {
@@ -188,7 +188,7 @@ router.get('/role', (req, res, next) => {
             [sn.email]: user.email,
             [sn.role]: user.role
         };
-        return res.status(rm.loggedIn.code).json(body);
+        return res.deliver(rm.loggedIn, body);
     }).catch((err) => {
         return next(err);
     });
@@ -197,7 +197,7 @@ router.get('/role', (req, res, next) => {
 router.put('/role', (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.changeRole);
     if (error) {
-        return res.status(rm.invalidParameters.code).json(rm.invalidParameters.msg);
+        return res.deliver(rm.invalidParameters);
     }
 
     const { email, role } = req.body;
@@ -205,27 +205,27 @@ router.put('/role', (req, res, next) => {
 
     User.getUserByEmail(jwt.decode(token).payload.email).then((tokenUser) => { // get the user of token
         if (!tokenUser) {
-            return res.status(rm.emailNotFound.code).json(rm.emailNotFound.msg);
+            return res.deliver(rm.emailNotFound);
         }
         if (tokenUser.role != sn.adminRole) { // check if the requester is actually an admin
-            return res.status(rm.notAuthorized.code).json(rm.notAuthorized.msg);
+            return res.deliver(rm.notAuthorized);
         }
         if (role !== sn.adminRole && role !== sn.userRole && role !== sn.guestRole) {
-            return res.status(rm.notAcceptableRole.code).json(rm.notAcceptableRole.msg);
+            return res.deliver(rm.notAcceptableRole);
         }
         User.getUserByEmail(email).then((requestUser) => { // get the user of email
             if (!requestUser) {
-                return res.status(rm.emailNotFound.code).json(rm.emailNotFound.msg);
+                return res.deliver(rm.emailNotFound);
             }
             if ([config.adminUsername, process.env.AUTHENTIQ_ADMIN_USERNAME].includes(requestUser.email)) {
-                return res.status(rm.primaryAdminChangeRoleFail.code).json(rm.primaryAdminChangeRoleFail.msg);
+                return res.deliver(rm.primaryAdminChangeRoleFail);
             }
             if (requestUser.role === role) {
-                return res.status(rm.roleNotChanged.code).json(rm.roleNotChanged.msg);
+                return res.deliver(rm.roleNotChanged);
             }
 
             User.updateRole(requestUser, role, () => {
-                return res.status(rm.changeRoleSuccess.code).json(rm.changeRoleSuccess.msg);
+                return res.deliver(rm.changeRoleSuccess);
             });
         }).catch((err) => {
             return next(err);
@@ -241,14 +241,14 @@ router.delete('/logout', (req, res, next) => {
         if (err) {
             return next(err);
         }
-        return res.status(rm.loggedOutSuccess.code).json(rm.loggedOutSuccess.msg);
+        return res.deliver(rm.loggedOutSuccess);
     });
 });
 
 router.delete('/delete', (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.deleteUser);
     if (error) {
-        return res.status(rm.invalidParameters.code).json(rm.invalidParameters.msg);
+        return res.deliver(rm.invalidParameters);
     }
 
     const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
@@ -257,7 +257,7 @@ router.delete('/delete', (req, res, next) => {
 
     User.getUserByEmail(email).then((user) => {
         if (!user) {
-            return res.status(rm.emailNotFound.code).json(rm.emailNotFound.msg);
+            return res.deliver(rm.emailNotFound);
         }
 
         User.comparePassword(password, user.password, (err) => {
@@ -265,10 +265,10 @@ router.delete('/delete', (req, res, next) => {
                 return next(err);
             }
             if (!isMatched) {
-                return res.status(rm.invalidPassword.code).json(rm.invalidPassword.msg);
+                return res.deliver(rm.invalidPassword);
             }
             if ([config.adminUsername, process.env.AUTHENTIQ_ADMIN_USERNAME].includes(user.email)) {
-                return res.status(rm.primaryAdminDeleteFail.code).json(rm.primaryAdminDeleteFail.msg);
+                return res.deliver(rm.primaryAdminDeleteFail);
             }
 
             LoggedIn.revokeAllTokens(user._id, (err, rec) => {
@@ -281,7 +281,7 @@ router.delete('/delete', (req, res, next) => {
                         return next(err);
                     }
 
-                    return res.status(rm.userDeletedSuccess.code).json(rm.userDeletedSuccess.msg);
+                    return res.deliver(rm.userDeletedSuccess);
                 });
             });
         });

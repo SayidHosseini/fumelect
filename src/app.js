@@ -9,10 +9,12 @@ db.init(app);
 const logger = require('morgan');
 app.use(logger('combined'));
 
-
+const reply = require('./middlewares/reply');
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users');
 const validateRouter = require('./routes/validate');
+
+app.use(reply);
 app.use('/authentiq/v1/', indexRouter);
 
 const config = require('../config/config');
@@ -28,7 +30,7 @@ app.use(async (req, res, next) => {
         const { method, url } = config.AuthenticationList[index];
         if (method === req.method && url === req.path) {
             if (!req.headers.authorization) {
-                return res.status(rm.noCredentials.code).json(rm.noCredentials.msg);
+                return res.deliver(rm.noCredentials);
             } else {
                 const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
                 if (!await tokenResponse(token, req, res, next)) {
