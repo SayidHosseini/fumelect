@@ -23,7 +23,6 @@ module.exports.init = (app) => {
         console.warn(lm.connectToDBNoUserPass, dbURL);
     }
 
-
     const mongooseOpts = {
         useCreateIndex: true,
         useNewUrlParser: true,
@@ -44,15 +43,11 @@ const createAdmin = async (app) => {
     const adminUsername = process.env.AUTHENTIQ_ADMIN_USERNAME || config.adminUsername;
     const adminPassword = process.env.AUTHENTIQ_ADMIN_PASSWORD || config.adminPassword;
 
-    const {
-        error
-    } = joi.validate({ email: adminUsername, password: adminPassword }, schemas.register);
-
+    const { error } = joi.validate({ email: adminUsername, password: adminPassword }, schemas.register);
     if (error) {
         console.error(lm.createAdminError);
         process.exit(1);
     }
-
 
     const adminUser = new User({
         email: adminUsername,
