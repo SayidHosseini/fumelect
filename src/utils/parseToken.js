@@ -8,11 +8,11 @@ module.exports.tokenResponse = async (token, req, res, next) => {
     try {
         const result = await LoggedIn.getRecordByToken(token);
         if (!result) {
-            res.status(rm.notLoggedIn.code).json(rm.notLoggedIn.msg);
+            res.deliver(rm.notLoggedIn);
             return false;
         }
         if (!result.valid || !validateToken(token)) {
-            res.status(rm.sessionInvalid.code).json(rm.sessionInvalid.msg);
+            res.deliver(rm.sessionInvalid);
             return false;
         }
     } catch (err) {
@@ -23,7 +23,7 @@ module.exports.tokenResponse = async (token, req, res, next) => {
     try {
         const user = await User.getUserByEmail(jwt.decode(token).payload.email); // check if user exist
         if (!user) {
-            res.status(rm.sessionInvalid.code).json(rm.sessionInvalid.msg);
+            res.deliver(rm.sessionInvalid);
             return false;
         }
 
