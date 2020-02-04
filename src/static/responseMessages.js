@@ -2,7 +2,7 @@ module.exports = {
     heartbeat: {
         code: 200,
         msg: {
-            message: "Authentication Service is up and running!"
+            message: "Authentiq is up and running!"
         }
     },
     noCredentials: {
