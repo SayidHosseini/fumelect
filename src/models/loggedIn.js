@@ -10,6 +10,10 @@ const LoggedInSchema = mongoose.Schema({
         type: String,
         required: true,
         unique: true
+    },
+    valid: {
+        type: Boolean,
+        default: true
     }
 });
 
@@ -22,22 +26,16 @@ module.exports.createLoggedIn = (newLoggedIn, callback) => {
 };
 
 module.exports.getRecordByToken = (token) => {
-    const query = {
-        token
-    };
+    const query = { token };
     return LoggedIn.findOne(query);
 };
 
-module.exports.removeRecordByToken = (token, callback) => {
-    const query = {
-        token
-    };
-    LoggedIn.deleteOne(query, callback);
+module.exports.revokeToken = async (token, callback) => {
+    const query = { token };
+    LoggedIn.updateOne(query, { $set: { valid: false } }, callback);
 };
 
-module.exports.removeRecordByUserID = (userID, callback) => {
-    const query = {
-        userID
-    };
-    LoggedIn.deleteMany(query, callback);
+module.exports.revokeAllTokens = async (userID, callback) => {
+    const query = { userID };
+    LoggedIn.updateMany(query, { $set: { valid: false } }, callback);
 };
