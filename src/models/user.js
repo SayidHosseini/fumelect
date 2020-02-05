@@ -55,7 +55,7 @@ module.exports.getUserByEmail = (email) => {
 };
 
 module.exports.comparePassword = (password, dbPassword, callback) => {
-    bcrypt.compare(password, dbPassword, (res) => {
+    bcrypt.compare(password, dbPassword, (err, res) => {
         if (res) {
             isMatched = true;
         } else {
