@@ -14,7 +14,7 @@ const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users');
 const validateRouter = require('./routes/validate');
 
-app.use(reply);
+app.use(reply.deliver);
 app.use('/authentiq/v1/', indexRouter);
 
 const config = require('../config/config');
