@@ -54,7 +54,7 @@ app.use((req, res, next) => {
 });
 
 // error handler
-app.use((err, res) => {
+app.use((err, req, res, next) => {
     console.error(err);
     if (process.env.NODE_ENV !== sn.production) {
         return res.contentType('text').status(err.status || 500).send(err.stack);
