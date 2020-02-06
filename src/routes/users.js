@@ -10,7 +10,6 @@ const LoggedIn = require('../models/loggedIn');
 const jwt = require('../jwt/jwtService');
 const rm = require('../static/responseMessages');
 const sn = require('../static/names');
-const config = require('../../config/config');
 
 router.post('/register', (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.register);
@@ -207,7 +206,7 @@ router.put('/role', (req, res, next) => {
         if (!tokenUser) {
             return res.deliver(rm.emailNotFound);
         }
-        if (tokenUser.role != sn.adminRole) { // check if the requester is actually an admin
+        if (![sn.superAdminRole, sn.adminRole].includes(tokenUser.role)) { // check if the requester is actually an admin pr
             return res.deliver(rm.notAuthorized);
         }
         if (role !== sn.adminRole && role !== sn.userRole && role !== sn.guestRole) {
@@ -217,8 +216,8 @@ router.put('/role', (req, res, next) => {
             if (!requestUser) {
                 return res.deliver(rm.emailNotFound);
             }
-            if ([config.adminUsername, process.env.AUTHENTIQ_ADMIN_USERNAME].includes(requestUser.email)) {
-                return res.deliver(rm.primaryAdminChangeRoleFail);
+            if (requestUser.role === sn.superAdminRole) {
+                return res.deliver(rm.superAdminChangeRoleFail);
             }
             if (requestUser.role === role) {
                 return res.deliver(rm.roleNotChanged);
@@ -267,8 +266,8 @@ router.delete('/delete', (req, res, next) => {
             if (!isMatched) {
                 return res.deliver(rm.invalidPassword);
             }
-            if ([config.adminUsername, process.env.AUTHENTIQ_ADMIN_USERNAME].includes(user.email)) {
-                return res.deliver(rm.primaryAdminDeleteFail);
+            if (user.role === sn.superAdminRole) {
+                return res.deliver(rm.superAdminDeleteFail);
             }
 
             LoggedIn.revokeAllTokens(user._id, (err, rec) => {

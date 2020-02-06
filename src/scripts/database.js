@@ -52,27 +52,26 @@ const createAdmin = async (app) => {
     const adminUser = new User({
         email: adminUsername,
         password: adminPassword,
-        role: sn.adminRole,
+        role: sn.superAdminRole,
         verified: true
     });
-    const user = await User.getUserByEmail(adminUser.email);
-    if (user) {
-        User.changePassword(user, adminPassword, (err, user) => {
-            if (err || !user) {
-                console.error(lm.createAdminFailed);
-                process.exit(1);
-            }
-            console.info(lm.adminUserExists, adminUsername);
-            app.emit(sn.dbReady);
-        });
-    } else {
-        console.info(lm.createAdminSuccess, adminUsername);
+
+    User.removeUserByRole(sn.superAdminRole, (err, records) => {
+        if(err) {
+            console.error(lm.removePreviousAdminFailed);
+            process.exit(1);
+        }
+        if(records.deletedCount) {
+            console.info(lm.removePreviousAdminSuccess);
+        }
+
         User.createUser(adminUser, (err) => {
             if (err) {
                 console.error(lm.createAdminFailed);
                 process.exit(1);
             }
+            console.info(lm.createAdminSuccess, adminUsername);
             app.emit(sn.dbReady);
         });
-    }
+    });
 };

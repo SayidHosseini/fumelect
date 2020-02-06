@@ -95,10 +95,10 @@ module.exports = {
             message: "You must be an admin to set role!"
         }
     },
-    primaryAdminChangeRoleFail: {
+    superAdminChangeRoleFail: {
         code: 405,
         msg: {
-            message: "Cannot change the role of the primary admin of the service!"
+            message: "The role of SuperAdmin cannot modified!"
         }
     },
     roleNotChanged: {
@@ -125,10 +125,10 @@ module.exports = {
             message: "Successfully deleted user!"
         }
     },
-    primaryAdminDeleteFail: {
+    superAdminDeleteFail: {
         code: 405,
         msg: {
-            message: "Cannot delete the primary admin of the service!"
+            message: "SuperAdmin user cannot be deleted!"
         }
     },
     internalServerError: {

@@ -91,3 +91,8 @@ module.exports.removeUserByEmail = (email, callback) => {
     const query = { email };
     User.deleteOne(query, callback);
 };
+
+module.exports.removeUserByRole = (role, callback) => {
+  const query = { role };
+  User.deleteMany(query, callback);
+};
