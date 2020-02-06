@@ -18,7 +18,7 @@ router.get('/token', (req, res, next) => {
             [sn.userID]: user._id,
             [sn.email]: user.email
         };
-        return res.deliver(rm.loggedIn);
+        return res.deliver(rm.loggedIn, body);
     }).catch((err) => {
         return next(err);
     });
