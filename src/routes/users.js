@@ -49,7 +49,7 @@ router.post('/register', (req, res, next) => {
             }
 
             const body = {
-                [sn.message]: rm.registerSuccessful.msg.message,
+                [sn.message]: rm.registerSuccess.msg.message,
                 [sn.user]: {
                     [sn.userID]: user._id,
                     [sn.email]: user.email,
@@ -57,7 +57,7 @@ router.post('/register', (req, res, next) => {
                 },
                 token
             };
-            return res.deliver(rm.registerSuccessful, body);
+            return res.deliver(rm.registerSuccess, body);
         });
     });
 });
@@ -73,14 +73,14 @@ router.post('/login', (req, res, next) => {
     // TODO: Make this part reusable and use it in Register    
     User.getUserByEmail(email).then((user) => {
         if (!user) {
-            return res.deliver(rm.invalidUserPass);
+            return res.deliver(rm.invalidCredentials);
         }
         User.comparePassword(password, user.password, (err) => {
             if (err) {
                 return next(err);
             }
             if (!isMatched) {
-                return res.deliver(rm.invalidUserPass);
+                return res.deliver(rm.invalidCredentials);
             }
 
             const payload = { email };

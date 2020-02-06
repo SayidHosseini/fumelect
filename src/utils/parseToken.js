@@ -8,7 +8,7 @@ module.exports.tokenResponse = async (token, req, res, next) => {
     try {
         const result = await LoggedIn.getRecordByToken(token);
         if (!result) {
-            res.deliver(rm.notLoggedIn);
+            res.deliver(rm.sessionInvalid);
             return false;
         }
         if (!result.valid || !validateToken(token)) {

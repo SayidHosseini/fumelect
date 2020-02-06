@@ -30,7 +30,7 @@ app.use(async (req, res, next) => {
         const { method, url } = config.AuthenticationList[index];
         if (method === req.method && url === req.path) {
             if (!req.headers.authorization) {
-                return res.deliver(rm.noCredentials);
+                return res.deliver(rm.noToken);
             } else {
                 const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
                 if (!await tokenResponse(token, req, res, next)) {

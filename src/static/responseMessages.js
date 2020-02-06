@@ -5,10 +5,10 @@ module.exports = {
             message: "Authentiq is up and running!"
         }
     },
-    noCredentials: {
-        code: 403,
+    noToken: {
+        code: 401,
         msg: {
-            message: "No credentials sent!"
+            message: "No token sent!"
         }
     },
     invalidParameters: {
@@ -20,19 +20,19 @@ module.exports = {
     emailExists: {
         code: 409,
         msg: {
-            message: "This E-mail already exists!"
+            message: "E-mail already exists!"
         }
     },
-    registerSuccessful: {
+    registerSuccess: {
         code: 201,
         msg: {
-            message: "Registered successfully!"
+            message: "Successfully Registered!"
         }
     },
-    invalidUserPass: {
+    invalidCredentials: {
         code: 401,
         msg: {
-            message: "Invalid Username or Password!"
+            message: "Invalid credentials!"
         }
     },
     loggedInSuccess: {
@@ -44,37 +44,31 @@ module.exports = {
     tooManyRequests: {
         code: 429,
         msg: {
-            message: "Too many login requests! Try again later..."
-        }
-    },
-    notLoggedIn: {
-        code: 401,
-        msg: {
-            message: "Sorry! You are not logged in!"
+            message: "Too many requests! Try again later..."
         }
     },
     sessionInvalid: {
-        code: 403,
+        code: 401,
         msg: {
-            message: "Your session has expired / is invalid!"
+            message: "Session is expired / invalid!"
+        }
+    },
+    invalidPassword: {
+        code: 401,
+        msg: {
+            message: "Invalid password!"
         }
     },
     loggedIn: {
         code: 200,
         msg: {
-            message: "You are logged in!"
-        }
-    },
-    invalidPassword: {
-        code: 403,
-        msg: {
-            message: "Invalid password!"
+            message: "Logged in!"
         }
     },
     changePasswordSuccess: {
         code: 200,
         msg: {
-            message: "Changed password successfully!"
+            message: "Successfully Changed password!"
         }
     },
     emailNotFound: {
@@ -84,33 +78,33 @@ module.exports = {
         }
     },
     notAcceptableRole: {
-        code: 406,
+        code: 400,
         msg: {
-            message: "Acceptable Roles are 'user' and 'admin'!"
+            message: "Acceptable Roles: 'admin', 'user', 'guest'!"
         }
     },
     notAuthorized: {
-        code: 401,
+        code: 403,
         msg: {
-            message: "You must be an admin to set role!"
+            message: "Must be admin to set role!"
         }
     },
     superAdminChangeRoleFail: {
-        code: 405,
+        code: 403,
         msg: {
-            message: "The role of SuperAdmin cannot modified!"
+            message: "Cannot modify SuperAdmin role!"
         }
     },
     roleNotChanged: {
         code: 200,
         msg: {
-            message: "The requested role has already been set!"
+            message: "Role is already set!"
         }
     },
     changeRoleSuccess: {
         code: 200,
         msg: {
-            message: "Changed role successfully!"
+            message: "Successfully changed role!"
         }
     },
     loggedOutSuccess: {
@@ -126,9 +120,9 @@ module.exports = {
         }
     },
     superAdminDeleteFail: {
-        code: 405,
+        code: 403,
         msg: {
-            message: "SuperAdmin user cannot be deleted!"
+            message: "Cannot delete SuperAdmin user!"
         }
     },
     internalServerError: {
