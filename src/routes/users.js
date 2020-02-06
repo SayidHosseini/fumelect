@@ -7,7 +7,8 @@ const schemas = require('../utils/validationSchema');
 const User = require('../models/user');
 const LoggedIn = require('../models/loggedIn');
 
-const jwt = require('../jwt/jwtService');
+const jwt = require('../services/jwt');
+const token = require('../middlewares/token');
 const rm = require('../static/responseMessages');
 const sn = require('../static/names');
 
@@ -34,10 +35,7 @@ router.post('/register', (req, res, next) => {
             return next(err);
         }
 
-        // Log the user in automatically
-        const payload = { email };
-        const signOptions = { subject: email };
-        const token = jwt.sign(payload, signOptions);
+        const token = jwt.sign(email);
         const newLoggedIn = new LoggedIn({
             [sn.userID]: user._id,
             token
@@ -83,9 +81,7 @@ router.post('/login', (req, res, next) => {
                 return res.deliver(rm.invalidCredentials);
             }
 
-            const payload = { email };
-            const signOptions = { subject: email };
-            const token = jwt.sign(payload, signOptions);
+            const token = jwt.sign(email);
             const newLoggedIn = new LoggedIn({
                 [sn.userID]: user._id,
                 token
@@ -108,7 +104,7 @@ router.post('/login', (req, res, next) => {
     });
 });
 
-router.put('/password', (req, res, next) => {
+router.put('/password', token.validate, (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.changePassword);
     if (error) {
         return res.deliver(rm.invalidParameters);
@@ -144,7 +140,7 @@ router.put('/password', (req, res, next) => {
     });
 });
 
-router.get('/list', (req, res, next) => {
+router.get('/list', token.validate, (req, res, next) => {
     // TODO: Restrict to admin users only
 
     User.getUsers((err, result) => {
@@ -172,7 +168,7 @@ router.get('/list', (req, res, next) => {
     });
 });
 
-router.get('/role', (req, res, next) => {
+router.get('/role', token.validate, (req, res, next) => {
     // TODO: Make this part reusable and use it in token validation
     // TODO: Make Get Role more flexible by accepting emails in request and checking their role
 
@@ -193,7 +189,7 @@ router.get('/role', (req, res, next) => {
     });
 });
 
-router.put('/role', (req, res, next) => {
+router.put('/role', token.validate, (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.changeRole);
     if (error) {
         return res.deliver(rm.invalidParameters);
@@ -234,7 +230,7 @@ router.put('/role', (req, res, next) => {
     });
 });
 
-router.delete('/logout', (req, res, next) => {
+router.delete('/logout', token.validate, (req, res, next) => {
     const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
     LoggedIn.revokeToken(token, (err) => {
         if (err) {
@@ -244,7 +240,7 @@ router.delete('/logout', (req, res, next) => {
     });
 });
 
-router.delete('/delete', (req, res, next) => {
+router.delete('/delete', token.validate, (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.deleteUser);
     if (error) {
         return res.deliver(rm.invalidParameters);
