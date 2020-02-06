@@ -1,50 +1,21 @@
 const express = require('express');
-const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-const db = require('./scripts/database');
-db.init(app);
-
 const logger = require('morgan');
-app.use(logger('combined'));
-
+const db = require('./scripts/database');
 const reply = require('./middlewares/reply');
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users');
 const validateRouter = require('./routes/validate');
-
-app.use(reply.deliver);
-app.use('/authentiq/v1/', indexRouter);
-
-const config = require('../config/config');
-const tokenResponse = require('./utils/parseToken').tokenResponse;
 const rm = require('./static/responseMessages');
 const sn = require('./static/names');
 
-// for checking if token exists
-app.use(async (req, res, next) => {
-    // TODO: Modify the for behavior to add middleware to each API
-    // check if the request is included in checking
-    for (let index = 0; index < config.AuthenticationList.length; index++) {
-        const { method, url } = config.AuthenticationList[index];
-        if (method === req.method && url === req.path) {
-            if (!req.headers.authorization) {
-                return res.deliver(rm.noToken);
-            } else {
-                const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
-                if (!await tokenResponse(token, req, res, next)) {
-                    return;
-                }
-                else {
-                    break;
-                }
-            }
-        }
-    }
-    next();
-});
+const app = express();
+db.init(app);
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(logger('combined'));
+app.use(reply.deliver);
 
+app.use('/authentiq/v1/', indexRouter);
 app.use('/authentiq/v1/validate', validateRouter);
 app.use('/authentiq/v1/user', userRouter);
 
