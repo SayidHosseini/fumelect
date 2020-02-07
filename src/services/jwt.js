@@ -26,7 +26,7 @@ const sign = (email) => {
 const verify = (token) => {
     const verifyOptions = {
         issuer: authentiqServerIssuer,
-        subject: decode(token).payload.email,
+        subject: authentiqTokenSubject,
         audience: authentiqClientIssuer,
         expiresIn: validityPeriod,
         algorithm: [signAlgorithm]
