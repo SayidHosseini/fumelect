@@ -11,7 +11,7 @@ router.get('/token', token.validate, (req, res, next) => {
     const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
     User.getUserByEmail(jwt.decode(token).payload.email).then((user) => {
         if (!user) {
-            return res.deliver(rm.emailNotFound);
+            return res.deliver(rm.sessionInvalid);
         }
 
         const body = {

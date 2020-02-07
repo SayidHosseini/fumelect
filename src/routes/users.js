@@ -116,7 +116,7 @@ router.put('/password', token.validate, (req, res, next) => {
 
     User.getUserByEmail(email).then((user) => {
         if (!user) {
-            return res.deliver(rm.emailNotFound);
+            return res.deliver(rm.sessionInvalid);
         }
 
         User.comparePassword(password, user.password, (err) => {
@@ -175,7 +175,7 @@ router.get('/role', token.validate, (req, res, next) => {
     const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
     User.getUserByEmail(jwt.decode(token).payload.email).then((user) => {
         if (!user) {
-            return res.deliver(rm.emailNotFound);
+            return res.deliver(rm.sessionInvalid);
         }
 
         const body = {
@@ -200,7 +200,7 @@ router.put('/role', token.validate, (req, res, next) => {
 
     User.getUserByEmail(jwt.decode(token).payload.email).then((tokenUser) => { // get the user of token
         if (!tokenUser) {
-            return res.deliver(rm.emailNotFound);
+            return res.deliver(rm.sessionInvalid);
         }
         if (![sn.superAdminRole, sn.adminRole].includes(tokenUser.role)) { // check if the requester is actually an admin pr
             return res.deliver(rm.notAuthorized);
@@ -252,7 +252,7 @@ router.delete('/delete', token.validate, (req, res, next) => {
 
     User.getUserByEmail(email).then((user) => {
         if (!user) {
-            return res.deliver(rm.emailNotFound);
+            return res.deliver(rm.sessionInvalid);
         }
 
         User.comparePassword(password, user.password, (err) => {
