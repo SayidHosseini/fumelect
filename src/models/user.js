@@ -50,7 +50,7 @@ module.exports.updateOrCreateSuperAdmin = (adminUser, callback) => {
     });
 };
 
-module.exports.createUser = (newUser, callback) => {
+module.exports.createRecord = (newUser, callback) => {
     bcrypt.genSalt(10, (err, salt) => {
         if (err) {
             callback(err, null);
@@ -67,11 +67,11 @@ module.exports.createUser = (newUser, callback) => {
     });
 };
 
-module.exports.getUsers = (callback) => {
+module.exports.getRecords = (callback) => {
     User.find(callback);
 };
 
-module.exports.getUserByEmail = (email) => {
+module.exports.getRecordByEmail = (email) => {
     const query = { email };
     return User.findOne(query);
 };
@@ -109,7 +109,7 @@ module.exports.changePassword = (user, newPassword, callback) => {
     });
 };
 
-module.exports.removeUserByEmail = (email, callback) => {
+module.exports.removeRecordByEmail = (email, callback) => {
     const query = { email };
     User.deleteOne(query, callback);
 };
