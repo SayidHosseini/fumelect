@@ -17,5 +17,7 @@ module.exports.validate = async (req, res, next) => {
     } catch (err) {
         return next(err);
     }
+    
+    req.token = token;
     next();
 };

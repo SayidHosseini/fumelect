@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const _ = require('underscore');
 
 const Joi = require('@hapi/joi');
 const schemas = require('../utils/validationSchema');
@@ -9,6 +10,7 @@ const LoggedIn = require('../models/loggedIn');
 
 const jwt = require('../services/jwt');
 const token = require('../middlewares/token');
+const extract = require('../middlewares/extract');
 const rm = require('../static/responseMessages');
 const sn = require('../static/names');
 
@@ -19,7 +21,6 @@ router.post('/register', (req, res, next) => {
     }
 
     const { email, password } = req.body;
-
     const newUser = new User({
         email,
         password,
@@ -37,8 +38,8 @@ router.post('/register', (req, res, next) => {
 
         const token = jwt.sign(email);
         const newLoggedIn = new LoggedIn({
-            [sn.userID]: user._id,
-            token
+            token,
+            userID: user._id,
         });
 
         LoggedIn.createLoggedIn(newLoggedIn, (err) => {
@@ -47,192 +48,117 @@ router.post('/register', (req, res, next) => {
             }
 
             const body = {
-                [sn.message]: rm.registerSuccess.msg.message,
-                [sn.user]: {
-                    [sn.userID]: user._id,
-                    [sn.email]: user.email,
-                    [sn.role]: user.role
-                },
-                token
+                token,
+                user: _.pick(user, ['id', 'email', 'role']),
+                message: rm.registerSuccess.msg.message
             };
             return res.deliver(rm.registerSuccess, body);
         });
     });
 });
 
-router.post('/login', (req, res, next) => {
+router.post('/login', extract.userByEmail, (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.login);
     if (error) {
         return res.deliver(rm.invalidParameters);
     }
+    if (!req.bodyUser) {
+        return res.deliver(rm.invalidCredentials);
+    }
 
-    const { email, password } = req.body;
-
+    const { id, email, password } = req.bodyUser;
     // TODO: Make this part reusable and use it in Register    
-    User.getUserByEmail(email).then((user) => {
-        if (!user) {
+    User.comparePassword(req.body.password, password, (err) => {
+        if (err) {
+            return next(err);
+        }
+        if (!isMatched) {
             return res.deliver(rm.invalidCredentials);
         }
-        User.comparePassword(password, user.password, (err) => {
+
+        const token = jwt.sign(email);
+        const newLoggedIn = new LoggedIn({ token, userID: id });
+        LoggedIn.createLoggedIn(newLoggedIn, (err) => {
             if (err) {
+                if (err.code === sn.duplicateError) {
+                    return res.deliver(rm.tooManyRequests);
+                }
                 return next(err);
             }
-            if (!isMatched) {
-                return res.deliver(rm.invalidCredentials);
-            }
 
-            const token = jwt.sign(email);
-            const newLoggedIn = new LoggedIn({
-                [sn.userID]: user._id,
-                token
-            });
-
-            LoggedIn.createLoggedIn(newLoggedIn, (err) => {
-                if (err) {
-                    if (err.code === sn.duplicateError) {
-                        return res.deliver(rm.tooManyRequests);
-                    }
-                    return next(err);
-                }
-
-                const body = { token };
-                return res.deliver(rm.loggedInSuccess, body);
-            });
+            return res.deliver(rm.loggedInSuccess, { token });
         });
-    }).catch((err) => {
-        return next(err);
     });
 });
 
-router.put('/password', token.validate, (req, res, next) => {
+router.put('/password', token.validate, extract.userByToken, (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.changePassword);
     if (error) {
         return res.deliver(rm.invalidParameters);
     }
 
-    const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
-    const { email } = jwt.decode(token).payload;
     const { password, newPassword } = req.body;
-
-    User.getUserByEmail(email).then((user) => {
-        if (!user) {
-            return res.deliver(rm.sessionInvalid);
+    User.comparePassword(password, req.user.password, (err) => {
+        if (err) {
+            return next(err);
+        }
+        if (!isMatched) {
+            return res.deliver(rm.invalidPassword);
         }
 
-        User.comparePassword(password, user.password, (err) => {
-            if (err) {
+        User.changePassword(req.user, newPassword, (err, user) => {
+            if (err || !user) {
                 return next(err);
             }
-            if (!isMatched) {
-                return res.deliver(rm.invalidPassword);
-            }
 
-            User.changePassword(user, newPassword, (err, user) => {
-                if (err || !user) {
-                    return next(err);
-                }
-
-                return res.deliver(rm.changePasswordSuccess);
-            });
+            return res.deliver(rm.changePasswordSuccess);
         });
-    }).catch((err) => {
-        return next(err);
     });
 });
 
 router.get('/list', token.validate, (req, res, next) => {
     // TODO: Restrict to admin users only
-
     User.getUsers((err, result) => {
         if (err) {
             return next(err);
         }
 
-        const body = { usersList: [] };
-
-        result.forEach(({
-            _id,
-            email,
-            role
-        }) => {
-            const user = {
-                [sn.userID]: _id,
-                [sn.email]: email,
-                [sn.role]: role
-            };
-
-            body.usersList.push(user);
-        });
-
-        return res.deliver(rm.loggedIn, body);
+        const usersList = result.map(({ id, email, role }) => ({ id, email, role }));
+        return res.deliver(rm.loggedIn, { usersList });
     });
 });
 
-router.get('/role', token.validate, (req, res, next) => {
-    // TODO: Make this part reusable and use it in token validation
-    // TODO: Make Get Role more flexible by accepting emails in request and checking their role
-
-    const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
-    User.getUserByEmail(jwt.decode(token).payload.email).then((user) => {
-        if (!user) {
-            return res.deliver(rm.sessionInvalid);
-        }
-
-        const body = {
-            [sn.userID]: user._id,
-            [sn.email]: user.email,
-            [sn.role]: user.role
-        };
-        return res.deliver(rm.loggedIn, body);
-    }).catch((err) => {
-        return next(err);
-    });
+router.get('/role', token.validate, extract.userByToken, (req, res, next) => {
+    const body = _.pick(req.user, ['id', 'email', 'role']);
+    return res.deliver(rm.loggedIn, body);
 });
 
-router.put('/role', token.validate, (req, res, next) => {
+router.put('/role', token.validate, extract.userByToken, extract.userByEmail, (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.changeRole);
     if (error) {
         return res.deliver(rm.invalidParameters);
     }
 
-    const { email, role } = req.body;
-    const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
+    if (![sn.superAdminRole, sn.adminRole].includes(req.user.role)) {
+        return res.deliver(rm.notAuthorized);
+    }
+    if (!req.bodyUser) {
+        return res.deliver(rm.emailNotFound);
+    }
+    if (req.bodyUser.role === sn.superAdminRole) {
+        return res.deliver(rm.superAdminChangeRoleFail);
+    }
+    if (req.bodyUser.role === req.body.role) {
+        return res.deliver(rm.roleNotChanged);
+    }
 
-    User.getUserByEmail(jwt.decode(token).payload.email).then((tokenUser) => { // get the user of token
-        if (!tokenUser) {
-            return res.deliver(rm.sessionInvalid);
-        }
-        if (![sn.superAdminRole, sn.adminRole].includes(tokenUser.role)) { // check if the requester is actually an admin pr
-            return res.deliver(rm.notAuthorized);
-        }
-        if (role !== sn.adminRole && role !== sn.userRole && role !== sn.guestRole) {
-            return res.deliver(rm.notAcceptableRole);
-        }
-        User.getUserByEmail(email).then((requestUser) => { // get the user of email
-            if (!requestUser) {
-                return res.deliver(rm.emailNotFound);
-            }
-            if (requestUser.role === sn.superAdminRole) {
-                return res.deliver(rm.superAdminChangeRoleFail);
-            }
-            if (requestUser.role === role) {
-                return res.deliver(rm.roleNotChanged);
-            }
-
-            User.updateRole(requestUser, role, () => {
-                return res.deliver(rm.changeRoleSuccess);
-            });
-        }).catch((err) => {
-            return next(err);
-        });
-    }).catch((err) => {
-        return next(err);
+    User.updateRole(req.bodyUser, req.body.role, () => {
+        return res.deliver(rm.changeRoleSuccess);
     });
 });
 
 router.delete('/logout', token.validate, (req, res, next) => {
-    const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
-    LoggedIn.revokeToken(token, (err) => {
+    LoggedIn.revokeToken(req.token, (err) => {
         if (err) {
             return next(err);
         }
@@ -240,48 +166,37 @@ router.delete('/logout', token.validate, (req, res, next) => {
     });
 });
 
-router.delete('/delete', token.validate, (req, res, next) => {
+router.delete('/delete', token.validate, extract.userByToken, (req, res, next) => {
     const { error } = Joi.validate(req.body, schemas.deleteUser);
     if (error) {
         return res.deliver(rm.invalidParameters);
     }
 
-    const token = req.get(sn.authorizationName).split(' ')[1]; // Extract the token from Bearer
-    const { email } = jwt.decode(token).payload;
-    const { password } = req.body;
-
-    User.getUserByEmail(email).then((user) => {
-        if (!user) {
-            return res.deliver(rm.sessionInvalid);
+    const { id, email, password, role } = req.user;
+    User.comparePassword(req.body.password, password, (err) => {
+        if (err) {
+            return next(err);
+        }
+        if (!isMatched) {
+            return res.deliver(rm.invalidPassword);
+        }
+        if (role === sn.superAdminRole) {
+            return res.deliver(rm.superAdminDeleteFail);
         }
 
-        User.comparePassword(password, user.password, (err) => {
-            if (err) {
+        LoggedIn.revokeAllTokens(id, (err, rec) => {
+            if (err || !rec) {
                 return next(err);
             }
-            if (!isMatched) {
-                return res.deliver(rm.invalidPassword);
-            }
-            if (user.role === sn.superAdminRole) {
-                return res.deliver(rm.superAdminDeleteFail);
-            }
 
-            LoggedIn.revokeAllTokens(user._id, (err, rec) => {
+            User.removeUserByEmail(email, (err, rec) => {
                 if (err || !rec) {
                     return next(err);
                 }
 
-                User.removeUserByEmail(email, (err, rec) => {
-                    if (err || !rec) {
-                        return next(err);
-                    }
-
-                    return res.deliver(rm.userDeletedSuccess);
-                });
+                return res.deliver(rm.userDeletedSuccess);
             });
         });
-    }).catch((err) => {
-        return next(err);
     });
 });
 
