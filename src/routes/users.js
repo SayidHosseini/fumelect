@@ -25,7 +25,7 @@ router.post('/register', (req, res, next) => {
         verified: false
     });
 
-    User.createUser(newUser, (err, user) => {
+    User.createRecord(newUser, (err, user) => {
         if (err || !user) {
             if (err.code === sn.duplicateError) {
                 return res.deliver(rm.emailExists);
@@ -39,7 +39,7 @@ router.post('/register', (req, res, next) => {
             userID: user._id,
         });
 
-        LoggedIn.createLoggedIn(newLoggedIn, (err) => {
+        LoggedIn.createRecord(newLoggedIn, (err) => {
             if (err) {
                 return next(err);
             }
@@ -75,7 +75,7 @@ router.post('/login', extract.userByEmail, (req, res, next) => {
 
         const token = jwt.sign(email);
         const newLoggedIn = new LoggedIn({ token, userID: id });
-        LoggedIn.createLoggedIn(newLoggedIn, (err) => {
+        LoggedIn.createRecord(newLoggedIn, (err) => {
             if (err) {
                 if (err.code === sn.duplicateError) {
                     return res.deliver(rm.tooManyRequests);
@@ -115,7 +115,7 @@ router.put('/password', token.validate, extract.userByToken, (req, res, next) =>
 
 router.get('/list', token.validate, (req, res, next) => {
     // TODO: Restrict to admin users only
-    User.getUsers((err, result) => {
+    User.getRecords((err, result) => {
         if (err) {
             return next(err);
         }
@@ -186,7 +186,7 @@ router.delete('/delete', token.validate, extract.userByToken, (req, res, next) =
                 return next(err);
             }
 
-            User.removeUserByEmail(email, (err, rec) => {
+            User.removeRecordByEmail(email, (err, rec) => {
                 if (err || !rec) {
                     return next(err);
                 }
