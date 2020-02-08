@@ -44,7 +44,7 @@
     "node": ">= 0.10.0"
   },
   "scripts": {
-    "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www"
+    "start": "node ./src/server",
+    "dev": "nodemon ./src/server"
   }
 }
