@@ -21,7 +21,7 @@ API Reference is provided in the [wiki](https://github.com/SayidHosseini/authent
 </table>
 <table>
     <tr>
-        <td valign="baseline"> :warning: </td><td> <strong>Authentiq</strong> provides <code>JWT</code> for <em>authentication</em> and <em>session management</em>. Currently, we do <strong>not</strong> generate unique key pairs for each new environment (this feature will be available soon). If you'd like to deploy this project in a production environment, it is very important to generate your own <em>public</em> / <em>private</em> key pair. The generated key pair should be placed in <code>src/jwt/</code> with the names <code>public.key</code> and <code>private.key</code>. </td>
+        <td valign="baseline"> :warning: </td><td> <strong>Authentiq</strong> provides <code>JWT</code> for <em>authentication</em> and <em>session management</em>. Currently, we do <strong>not</strong> generate unique key pairs for each new environment (this feature will be available soon). If you'd like to deploy this project in a production environment, it is very important to generate your own <em>public</em> / <em>private</em> key pair. The generated key pair should be placed in <code>keys</code> directory with the names <code>public.key</code> and <code>private.key</code>. </td>
     </tr>
 </table>
 
