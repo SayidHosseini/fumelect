@@ -1,13 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const joi = require('@hapi/joi');
 const _ = require('underscore');
-
-const Joi = require('@hapi/joi');
 const schemas = require('../utils/validationSchema');
-
 const User = require('../models/user');
 const LoggedIn = require('../models/loggedIn');
-
 const jwt = require('../services/jwt');
 const token = require('../middlewares/token');
 const extract = require('../middlewares/extract');
@@ -15,7 +12,7 @@ const rm = require('../static/responseMessages');
 const sn = require('../static/names');
 
 router.post('/register', (req, res, next) => {
-    const { error } = Joi.validate(req.body, schemas.register);
+    const { error } = joi.validate(req.body, schemas.register);
     if (error) {
         return res.deliver(rm.invalidParameters);
     }
@@ -58,7 +55,7 @@ router.post('/register', (req, res, next) => {
 });
 
 router.post('/login', extract.userByEmail, (req, res, next) => {
-    const { error } = Joi.validate(req.body, schemas.login);
+    const { error } = joi.validate(req.body, schemas.login);
     if (error) {
         return res.deliver(rm.invalidParameters);
     }
@@ -92,7 +89,7 @@ router.post('/login', extract.userByEmail, (req, res, next) => {
 });
 
 router.put('/password', token.validate, extract.userByToken, (req, res, next) => {
-    const { error } = Joi.validate(req.body, schemas.changePassword);
+    const { error } = joi.validate(req.body, schemas.changePassword);
     if (error) {
         return res.deliver(rm.invalidParameters);
     }
@@ -134,7 +131,7 @@ router.get('/role', token.validate, extract.userByToken, (req, res, next) => {
 });
 
 router.put('/role', token.validate, extract.userByToken, extract.userByEmail, (req, res, next) => {
-    const { error } = Joi.validate(req.body, schemas.changeRole);
+    const { error } = joi.validate(req.body, schemas.changeRole);
     if (error) {
         return res.deliver(rm.invalidParameters);
     }
@@ -167,7 +164,7 @@ router.delete('/logout', token.validate, (req, res, next) => {
 });
 
 router.delete('/delete', token.validate, extract.userByToken, (req, res, next) => {
-    const { error } = Joi.validate(req.body, schemas.deleteUser);
+    const { error } = joi.validate(req.body, schemas.deleteUser);
     if (error) {
         return res.deliver(rm.invalidParameters);
     }
