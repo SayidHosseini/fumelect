@@ -1,30 +1,28 @@
-const Joi = require('@hapi/joi');
+const joi = require('@hapi/joi');
 const sn = require('../static/names');
 
-const passwordValidation = Joi.string().required().regex(/^[a-zA-Z0-9!@#$%^&*]{8,}$/);
-const emailValidation = Joi.string().required().email({
-    minDomainSegments: 2
-});
-const roleValidation = Joi.string().required().valid([sn.adminRole, sn.userRole, sn.guestRole]).insensitive();
+const passwordValidation = joi.string().required().regex(/^[a-zA-Z0-9!@#$%^&*]{8,}$/);
+const emailValidation = joi.string().required().email({ minDomainSegments: 2 });
+const roleValidation = joi.string().required().valid([sn.adminRole, sn.userRole, sn.guestRole]).insensitive();
 
 module.exports = {
-    login: Joi.object({
+    login: joi.object({
         email: emailValidation,
         password: passwordValidation
     }),
-    register: Joi.object({
+    register: joi.object({
         email: emailValidation,
         password: passwordValidation
     }),
-    changePassword: Joi.object({
+    changePassword: joi.object({
         password: passwordValidation,
         newPassword: passwordValidation
     }),
-    changeRole: Joi.object({
+    changeRole: joi.object({
         email: emailValidation,
         role: roleValidation
     }),
-    deleteUser: Joi.object({
+    deleteUser: joi.object({
         password: passwordValidation
     })
 };

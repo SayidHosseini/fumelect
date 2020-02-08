@@ -4,14 +4,13 @@ const jwt = require('jsonwebtoken');
 // use 'utf8' to get string instead of byte array  (512 bit key)
 const privateKEY = fs.readFileSync('./keys/private.key', 'utf8');
 const publicKEY = fs.readFileSync('./keys/public.key', 'utf8');
-
 const authentiqServerIssuer = "Authentiq Server";
 const authentiqClientIssuer = "Authentiq Client";
 const authentiqTokenSubject = "Authentiq Access Token";
 const validityPeriod = "1d";
 const signAlgorithm = "RS256";
 
-const sign = (email) => {
+module.exports.sign = (email) => {
     const payload = { email };
     const signOptions = {
         issuer: authentiqServerIssuer,
@@ -23,7 +22,7 @@ const sign = (email) => {
     return jwt.sign(payload, privateKEY, signOptions);
 };
 
-const verify = (token) => {
+module.exports.verify = (token) => {
     const verifyOptions = {
         issuer: authentiqServerIssuer,
         subject: authentiqTokenSubject,
@@ -41,9 +40,6 @@ const verify = (token) => {
     }
 };
 
-const decode = (token) => { // returns null if token is invalid
+module.exports.decode = (token) => { // returns null if token is invalid
     return jwt.decode(token, { complete: true });
 };
-
-
-module.exports = { sign, verify, decode };

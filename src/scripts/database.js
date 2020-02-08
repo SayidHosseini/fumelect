@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 const joi = require('@hapi/joi');
-
+const config = require('../../config/config');
 const schemas = require('../utils/validationSchema');
 const User = require('../models/user');
-const config = require('../../config/config');
 const lm = require('../static/logMessages');
 const sn = require('../static/names');
 
