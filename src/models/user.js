@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const _ = require('underscore');
 
 const UserSchema = mongoose.Schema({
     email: {
@@ -27,6 +28,27 @@ const UserSchema = mongoose.Schema({
 // TODO: Modify structure to use objects instead of method parameters
 
 const User = module.exports = mongoose.model('User', UserSchema);
+
+module.exports.updateOrCreateSuperAdmin = (adminUser, callback) => {
+    bcrypt.genSalt(10, (err, salt) => {
+        if (err) {
+            callback(err, null);
+        } else {
+            bcrypt.hash(adminUser.password, salt, (err, hash) => {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    adminUser.password = hash;
+                    const query = { role: adminUser.role };
+                    User.updateOne(query,
+                        { $set: adminUser },
+                        { upsert: true },
+                        callback);
+                }
+            });
+        }
+    });
+};
 
 module.exports.createUser = (newUser, callback) => {
     bcrypt.genSalt(10, (err, salt) => {
@@ -90,9 +112,4 @@ module.exports.changePassword = (user, newPassword, callback) => {
 module.exports.removeUserByEmail = (email, callback) => {
     const query = { email };
     User.deleteOne(query, callback);
-};
-
-module.exports.removeUserByRole = (role, callback) => {
-  const query = { role };
-  User.deleteMany(query, callback);
 };
