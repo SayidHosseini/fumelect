@@ -1,6 +1,6 @@
 const express = require('express');
 const logger = require('morgan');
-const db = require('./scripts/database');
+const db = require('./utils/database');
 const reply = require('./middlewares/reply');
 const error = require('./middlewares/error');
 const indexRouter = require('./routes/index');
