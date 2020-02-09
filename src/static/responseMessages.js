@@ -86,7 +86,7 @@ module.exports = {
     notAuthorized: {
         code: 403,
         msg: {
-            message: "Must be admin to set role!"
+            message: "Not authorized!"
         }
     },
     superAdminChangeRoleFail: {
