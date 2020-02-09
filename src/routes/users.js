@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const joi = require('@hapi/joi');
 const _ = require('underscore');
 const User = require('../models/user');
 const LoggedIn = require('../models/loggedIn');
 const jwt = require('../services/jwt');
 const validate = require('../middlewares/validate');
-const extract = require('../middlewares/extract');
 const rm = require('../static/responseMessages');
 const sn = require('../static/names');
 
@@ -48,11 +46,7 @@ router.post('/register', validate.register, (req, res, next) => {
     });
 });
 
-router.post('/login', validate.login, extract.userByEmail, (req, res, next) => {
-    if (!req.bodyUser) {
-        return res.deliver(rm.invalidCredentials);
-    }
-
+router.post('/login', validate.login, (req, res, next) => {
     const { id, email, password } = req.bodyUser;
     // TODO: Make this part reusable and use it in Register    
     User.comparePassword(req.body.password, password, (err) => {
@@ -78,7 +72,7 @@ router.post('/login', validate.login, extract.userByEmail, (req, res, next) => {
     });
 });
 
-router.put('/password', validate.changePassword, extract.userByToken, (req, res, next) => {
+router.put('/password', validate.changePassword, (req, res, next) => {
     const { password, newPassword } = req.body;
 
     User.comparePassword(password, req.user.password, (err) => {
@@ -100,7 +94,6 @@ router.put('/password', validate.changePassword, extract.userByToken, (req, res,
 });
 
 router.get('/list', validate.listUsers, (req, res, next) => {
-    // TODO: Restrict to admin users only
     User.getRecords((err, result) => {
         if (err) {
             return next(err);
@@ -111,18 +104,12 @@ router.get('/list', validate.listUsers, (req, res, next) => {
     });
 });
 
-router.get('/role', validate.getRole, extract.userByToken, (req, res, next) => {
+router.get('/role', validate.getRole, (req, res, next) => {
     const body = _.pick(req.user, ['id', 'email', 'role']);
     return res.deliver(rm.loggedIn, body);
 });
 
-router.put('/role', validate.changeRole, extract.userByToken, extract.userByEmail, (req, res, next) => {
-    if (![sn.superAdminRole, sn.adminRole].includes(req.user.role)) {
-        return res.deliver(rm.notAuthorized);
-    }
-    if (!req.bodyUser) {
-        return res.deliver(rm.emailNotFound);
-    }
+router.put('/role', validate.changeRole, (req, res, next) => {
     if (req.bodyUser.role === sn.superAdminRole) {
         return res.deliver(rm.superAdminChangeRoleFail);
     }
@@ -144,7 +131,7 @@ router.delete('/logout', validate.logout, (req, res, next) => {
     });
 });
 
-router.delete('/delete', validate.deleteUser, extract.userByToken, (req, res, next) => {
+router.delete('/delete', validate.deleteUser, (req, res, next) => {
     const { id, email, password, role } = req.user;
     User.comparePassword(req.body.password, password, (err) => {
         if (err) {
