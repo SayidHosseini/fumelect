@@ -6,11 +6,11 @@ const emailValidation = joi.string().required().email({ minDomainSegments: 2 });
 const roleValidation = joi.string().required().valid([sn.adminRole, sn.userRole, sn.guestRole]).insensitive();
 
 module.exports = {
-    login: joi.object({
+    register: joi.object({
         email: emailValidation,
         password: passwordValidation
     }),
-    register: joi.object({
+    login: joi.object({
         email: emailValidation,
         password: passwordValidation
     }),

@@ -2,21 +2,15 @@ const express = require('express');
 const router = express.Router();
 const joi = require('@hapi/joi');
 const _ = require('underscore');
-const schemas = require('../utils/validationSchema');
 const User = require('../models/user');
 const LoggedIn = require('../models/loggedIn');
 const jwt = require('../services/jwt');
-const token = require('../middlewares/token');
+const validate = require('../middlewares/validate');
 const extract = require('../middlewares/extract');
 const rm = require('../static/responseMessages');
 const sn = require('../static/names');
 
-router.post('/register', (req, res, next) => {
-    const { error } = joi.validate(req.body, schemas.register);
-    if (error) {
-        return res.deliver(rm.invalidParameters);
-    }
-
+router.post('/register', validate.register, (req, res, next) => {
     const { email, password } = req.body;
     const newUser = new User({
         email,
@@ -54,11 +48,7 @@ router.post('/register', (req, res, next) => {
     });
 });
 
-router.post('/login', extract.userByEmail, (req, res, next) => {
-    const { error } = joi.validate(req.body, schemas.login);
-    if (error) {
-        return res.deliver(rm.invalidParameters);
-    }
+router.post('/login', validate.login, extract.userByEmail, (req, res, next) => {
     if (!req.bodyUser) {
         return res.deliver(rm.invalidCredentials);
     }
@@ -88,13 +78,9 @@ router.post('/login', extract.userByEmail, (req, res, next) => {
     });
 });
 
-router.put('/password', token.validate, extract.userByToken, (req, res, next) => {
-    const { error } = joi.validate(req.body, schemas.changePassword);
-    if (error) {
-        return res.deliver(rm.invalidParameters);
-    }
-
+router.put('/password', validate.changePassword, extract.userByToken, (req, res, next) => {
     const { password, newPassword } = req.body;
+
     User.comparePassword(password, req.user.password, (err) => {
         if (err) {
             return next(err);
@@ -113,7 +99,7 @@ router.put('/password', token.validate, extract.userByToken, (req, res, next) =>
     });
 });
 
-router.get('/list', token.validate, (req, res, next) => {
+router.get('/list', validate.listUsers, (req, res, next) => {
     // TODO: Restrict to admin users only
     User.getRecords((err, result) => {
         if (err) {
@@ -125,17 +111,12 @@ router.get('/list', token.validate, (req, res, next) => {
     });
 });
 
-router.get('/role', token.validate, extract.userByToken, (req, res, next) => {
+router.get('/role', validate.getRole, extract.userByToken, (req, res, next) => {
     const body = _.pick(req.user, ['id', 'email', 'role']);
     return res.deliver(rm.loggedIn, body);
 });
 
-router.put('/role', token.validate, extract.userByToken, extract.userByEmail, (req, res, next) => {
-    const { error } = joi.validate(req.body, schemas.changeRole);
-    if (error) {
-        return res.deliver(rm.invalidParameters);
-    }
-
+router.put('/role', validate.changeRole, extract.userByToken, extract.userByEmail, (req, res, next) => {
     if (![sn.superAdminRole, sn.adminRole].includes(req.user.role)) {
         return res.deliver(rm.notAuthorized);
     }
@@ -154,7 +135,7 @@ router.put('/role', token.validate, extract.userByToken, extract.userByEmail, (r
     });
 });
 
-router.delete('/logout', token.validate, (req, res, next) => {
+router.delete('/logout', validate.logout, (req, res, next) => {
     LoggedIn.revokeToken(req.token, (err) => {
         if (err) {
             return next(err);
@@ -163,12 +144,7 @@ router.delete('/logout', token.validate, (req, res, next) => {
     });
 });
 
-router.delete('/delete', token.validate, extract.userByToken, (req, res, next) => {
-    const { error } = joi.validate(req.body, schemas.deleteUser);
-    if (error) {
-        return res.deliver(rm.invalidParameters);
-    }
-
+router.delete('/delete', validate.deleteUser, extract.userByToken, (req, res, next) => {
     const { id, email, password, role } = req.user;
     User.comparePassword(req.body.password, password, (err) => {
         if (err) {
