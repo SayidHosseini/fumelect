@@ -25,24 +25,7 @@ router.post('/register', validate.register, (req, res, next) => {
             return next(err);
         }
 
-        const token = jwt.sign(email);
-        const newLoggedIn = new LoggedIn({
-            token,
-            userID: user._id,
-        });
-
-        LoggedIn.createRecord(newLoggedIn, (err) => {
-            if (err) {
-                return next(err);
-            }
-
-            const body = {
-                token,
-                user: _.pick(user, ['id', 'email', 'role']),
-                message: rm.registerSuccess.msg.message
-            };
-            return res.deliver(rm.registerSuccess, body);
-        });
+        return res.deliver(rm.registerSuccess);
     });
 });
 
