@@ -5,6 +5,10 @@ module.exports.notFound = (req, res, next) => {
 };
 
 module.exports.unknown = (err, req, res, next) => {
+    if (err.status === 400) {
+        return res.deliver(rm.invalidParameters);
+    }
+    
     console.error(err);
     if (process.env.NODE_ENV !== 'production') {
         return res.contentType('text').status(err.status || 500).send(err.stack);
