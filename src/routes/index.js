@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const rm = require('../static/responseMessages');
+const indexController = require('../controllers/index');
 
-router.get('/heartbeat', function (req, res, next) {
-	return res.deliver(rm.heartbeat);
-});
+router.get('/heartbeat', indexController.heartbeat);
 
 module.exports = router;

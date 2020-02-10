@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const validate = require('../middlewares/validate');
-const rm = require('../static/responseMessages');
+const validateController = require('../controllers/validate');
 
-router.get('/token', validate.token, (req, res, next) => {
-    return res.deliver(rm.loggedIn);
-});
+router.get('/token', validate.token, validateController.token);
 
 module.exports = router;
